@@ -210,7 +210,7 @@ export default function Home() {
                 ? (
                   <CopyToClipboard
                     text={textToCopy}
-                    onCopy={() => openSnackbar({ type: 'success', message: 'Mensagem copiada com sucesso.' })}
+                    onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.' })}
                   >
                     <Button
                       startIcon={<CopyIcon />}
