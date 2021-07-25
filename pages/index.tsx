@@ -19,7 +19,7 @@ import {
   trimStart,
 } from 'lodash'
 import Head from 'next/head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 import {
@@ -30,7 +30,7 @@ import {
   Container,
   Grid,
   // IconButton,
-  Link,
+  // Link,
   Paper,
   Snackbar,
   Table,
@@ -269,7 +269,7 @@ export default function Home() {
         }
       </Container>
 
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <Link
           color="inherit"
           underline="hover"
@@ -282,7 +282,7 @@ export default function Home() {
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </Link >
-      </footer>
+      </footer> */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
