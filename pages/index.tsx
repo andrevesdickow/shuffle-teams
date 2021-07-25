@@ -200,7 +200,7 @@ export default function Home() {
               startIcon={<ShuffleIcon />}
               variant="outlined"
               onClick={shuffleTeams}
-              size="small"
+            // size="small"
             >
               Sortear
             </LoadingButton>
@@ -216,7 +216,7 @@ export default function Home() {
                       startIcon={<CopyIcon />}
                       variant="outlined"
                       onClick={() => { }}
-                      size="small"
+                    // size="small"
                     >
                       Copiar resultado
                     </Button>
