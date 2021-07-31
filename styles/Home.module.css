@@ -1,11 +1,13 @@
-.container {
+.main {
   min-height: 100vh;
-  padding: 0 0.5rem;
+  height: 100vh;
+}
+
+.container {
   display: flex;
   flex-direction: column;
+  height: calc(100% - 64px);
   justify-content: center;
-  align-items: center;
-  height: 100vh;
 }
 
 .footer {
@@ -51,7 +53,7 @@
 }
 
 .code {
-  background: #fafafa;
+  /* background: #fafafa; */
   border-radius: 5px;
   padding: 0.75rem;
   font-size: 1.1rem;

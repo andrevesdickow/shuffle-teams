@@ -1,4 +1,4 @@
-import { useMemo, useState, SyntheticEvent } from 'react'
+import { useContext, useMemo, useState, SyntheticEvent } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import {
@@ -25,11 +25,12 @@ import styles from '../styles/Home.module.css'
 import {
   Alert,
   AlertColor,
+  AppBar,
   Box,
   Button,
   Container,
   Grid,
-  // IconButton,
+  IconButton,
   // Link,
   Paper,
   Snackbar,
@@ -40,16 +41,20 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Toolbar,
   Typography,
 } from '@material-ui/core'
 
 import {
   // Close as CloseIcon,
+  BrightnessMedium as BrightnessMediumIcon,
   ContentCopy as CopyIcon,
   Shuffle as ShuffleIcon
 } from '@material-ui/icons'
 
 import LoadingButton from '@material-ui/lab/LoadingButton'
+
+import AppContext from '../components/contexts/AppContext'
 
 type SnackbarProps = {
   open: boolean;
@@ -58,6 +63,8 @@ type SnackbarProps = {
 }
 
 export default function Home() {
+  const { toggleTheme } = useContext(AppContext)
+
   const [loading, setLoading] = useState<boolean>(false)
   const [members, setMembers] = useState<string>('')
   const [numberOfTeams, setNumberOfTeams] = useState<string>('2')
@@ -147,14 +154,43 @@ export default function Home() {
   }, [teams])
 
   return (
-    <Box className={styles.container}>
+    <Box className={styles.main}>
       <Head>
         <title>Sorteador de Times</title>
         <meta name="description" content="Sorteador de Times para qualquer esporte." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Container maxWidth="sm">
+      <AppBar position="static">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+          // sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
+            Sorteador de Times
+          </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box
+          // sx={{ display: { xs: 'none', md: 'flex' } }}
+          >
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="toggle theme"
+              aria-controls="toggleTheme"
+              aria-haspopup="true"
+              onClick={toggleTheme}
+              color="inherit"
+            >
+              <BrightnessMediumIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="sm" className={styles.container}>
         <Box className={styles.header}>
           <Typography variant="h1" className={styles.title}>
             Sorteador de <b>Times!</b>

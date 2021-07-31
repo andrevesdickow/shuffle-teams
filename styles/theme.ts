@@ -14,6 +14,13 @@ const theme = createTheme({
       main: red.A400,
     },
   },
+  components: {
+    MuiAppBar: {
+      defaultProps: {
+        enableColorOnDark: true,
+      },
+    },
+  },
 })
 
 export default theme
