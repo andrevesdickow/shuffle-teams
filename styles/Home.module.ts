@@ -1,4 +1,7 @@
-const styles = (theme) => ({
+import { Theme } from '@material-ui/core'
+import { createStyles } from '@material-ui/styles'
+
+const styles = (theme: Theme) => createStyles({
   main: {
     minHeight: '100vh',
     height: '100vh',
@@ -75,7 +78,7 @@ const styles = (theme) => ({
       width: '100%',
       flexDirection: 'column',
     }
-  }
+  },
 })
 
 export default styles

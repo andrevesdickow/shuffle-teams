@@ -1,15 +1,8 @@
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
+import * as React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import createEmotionServer from '@emotion/server/create-instance'
-import theme from '../styles/theme'
-import { Children } from 'react'
-
-function getCache() {
-  const cache = createCache({ key: 'css', prepend: true })
-  cache.compat = true
-  return cache
-}
+import theme from '../styles/light'
+import createEmotionCache from '../components/functions/createEmotionCache'
 
 export default class MyDocument extends Document {
   render() {
@@ -59,22 +52,20 @@ MyDocument.getInitialProps = async (ctx) => {
 
   const originalRenderPage = ctx.renderPage
 
-  const cache = getCache()
+  // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
+  // However, be aware that it can have global side effects.
+  const cache = createEmotionCache()
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
   ctx.renderPage = () =>
     originalRenderPage({
-      // Take precedence over the CacheProvider in our custom _app.js
       // eslint-disable-next-line react/display-name
-      enhanceComponent: (Component) => (props) =>
-      (
-        <CacheProvider value={cache}>
-          <Component {...props} />
-        </CacheProvider>
-      ),
+      enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
     })
 
   const initialProps = await Document.getInitialProps(ctx)
+  // This is important. It prevents emotion to render invalid HTML.
+  // See https://github.com/mui-org/material-ui/issues/26561#issuecomment-855286153
   const emotionStyles = extractCriticalToChunks(initialProps.html)
   const emotionStyleTags = emotionStyles.styles.map((style) => (
     <style
@@ -88,6 +79,6 @@ MyDocument.getInitialProps = async (ctx) => {
   return {
     ...initialProps,
     // Styles fragment is rendered after the app and page rendering finish.
-    styles: [...Children.toArray(initialProps.styles), ...emotionStyleTags],
+    styles: [...React.Children.toArray(initialProps.styles), ...emotionStyleTags],
   }
 }

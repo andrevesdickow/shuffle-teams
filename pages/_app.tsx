@@ -4,8 +4,7 @@ import { parseCookies } from 'nookies'
 import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import { withStyles } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
+import { CacheProvider, EmotionCache } from '@emotion/react'
 import isEmpty from 'lodash/isEmpty'
 import AppContext from '../components/contexts/AppContext'
 
@@ -15,12 +14,19 @@ import light from '../styles/light'
 import dark from '../styles/dark'
 import { GetServerSideProps } from 'next'
 
-const cache = createCache({ key: 'css', prepend: true })
-cache.compat = true
+import createEmotionCache from '../components/functions/createEmotionCache'
 
-function MyApp(props: AppProps) {
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache()
+
+interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache
+}
+
+function MyApp(props: MyAppProps) {
   const {
     Component,
+    emotionCache = clientSideEmotionCache,
     pageProps: {
       cookieTheme,
       ...otherPageProps
@@ -47,14 +53,14 @@ function MyApp(props: AppProps) {
   }
 
   return (
-    <CacheProvider value={cache}>
-      <AppContext.Provider value={{ toggleTheme }}>
-        <ThemeProvider theme={currentTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+    <CacheProvider value={emotionCache}>
+      <ThemeProvider theme={currentTheme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <AppContext.Provider value={{ toggleTheme }}>
           <Component {...otherPageProps} />
-        </ThemeProvider>
-      </AppContext.Provider>
+        </AppContext.Provider>
+      </ThemeProvider>
     </CacheProvider>
   )
 }
