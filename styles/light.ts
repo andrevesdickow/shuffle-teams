@@ -13,13 +13,13 @@ const light = {
       main: red.A400,
     },
   },
-  // components: {
-  //   MuiAppBar: {
-  //     defaultProps: {
-  //       enableColorOnDark: true,
-  //     },
-  //   },
-  // },
+  components: {
+    MuiAppBar: {
+      defaultProps: {
+        enableColorOnDark: true,
+      },
+    },
+  },
 }
 
 export default light

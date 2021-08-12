@@ -19,8 +19,6 @@ import {
   trimStart,
 } from 'lodash'
 import Head from 'next/head'
-// import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 
 import {
   Alert,
@@ -45,6 +43,8 @@ import {
   Typography,
 } from '@material-ui/core'
 
+import { withStyles } from '@material-ui/styles'
+
 import {
   // Close as CloseIcon,
   BrightnessMedium as BrightnessMediumIcon,
@@ -56,13 +56,21 @@ import LoadingButton from '@material-ui/lab/LoadingButton'
 
 import AppContext from '../components/contexts/AppContext'
 
+import styles from '../styles/Home.module'
+
+type HomeProps = {
+  classes: any
+}
+
 type SnackbarProps = {
   open: boolean;
   type: AlertColor;
   message?: string;
 }
 
-export default function Home() {
+const Home = (props: HomeProps) => {
+  const { classes } = props
+
   const { toggleTheme } = useContext(AppContext)
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -154,7 +162,7 @@ export default function Home() {
   }, [teams])
 
   return (
-    <Box className={styles.main}>
+    <Box className={classes.main}>
       <Head>
         <title>Sorteador de Times</title>
         <meta name="description" content="Sorteador de Times para qualquer esporte." />
@@ -190,15 +198,15 @@ export default function Home() {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="sm" className={styles.container}>
-        <Box className={styles.header}>
-          <Typography variant="h1" className={styles.title}>
+      <Container maxWidth="sm" className={classes.container}>
+        <Box className={classes.header}>
+          <Typography variant="h1" className={classes.title}>
             Sorteador de <b>Times!</b>
           </Typography>
 
-          <Typography variant="h2" className={styles.description}>
+          <Typography variant="h2" className={classes.description}>
             Digite os nomes dos integrantes separados por vírgula{' '}
-            <code className={styles.code}>,</code>
+            <code className={classes.code}>,</code>
           </Typography>
         </Box>
 
@@ -266,7 +274,7 @@ export default function Home() {
         {
           !isEmpty(result)
             ? (
-              <Grid container spacing={1} className={styles.table}>
+              <Grid container spacing={1} className={classes.table}>
                 {
                   map(teams, (team, teamIndex) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={`Equipe ${teamIndex + 1}`}>
@@ -305,7 +313,7 @@ export default function Home() {
         }
       </Container>
 
-      {/* <footer className={styles.footer}>
+      {/* <footer className={classes.footer}>
         <Link
           color="inherit"
           underline="hover"
@@ -314,7 +322,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <span className={styles.logo}>
+          <span className={classes.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </Link >
@@ -341,3 +349,5 @@ export default function Home() {
     </Box>
   )
 }
+
+export default withStyles(styles)(Home)
