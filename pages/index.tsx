@@ -83,9 +83,9 @@ const Home = (props: HomeProps) => {
     type: 'warning'
   })
 
-  const openSnackbar = ({ type, message }): void => {
+  const openSnackbar = ({ type, message, open = true }: SnackbarProps): void => {
     setSnackbar({
-      open: true,
+      open,
       type,
       message
     })
@@ -104,14 +104,14 @@ const Home = (props: HomeProps) => {
 
   function shuffleTeams(): void {
     if (isEmpty(members)) {
-      openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.' })
+      openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
       return
     }
 
     const teams = toNumber(numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
-      openSnackbar({ type: 'error', message: 'Informe a quantidade de equipes.' })
+      openSnackbar({ type: 'error', message: 'Informe a quantidade de equipes.', open: true })
       return
     }
 
@@ -142,8 +142,8 @@ const Home = (props: HomeProps) => {
   }
 
   const teams = useMemo(() => {
-    const aux = []
-    mapValues(result, (teams) => {
+    const aux: string[][] = []
+    mapValues(result, (teams: string[]) => {
       aux.push(teams)
     })
 
@@ -254,7 +254,7 @@ const Home = (props: HomeProps) => {
                 ? (
                   <CopyToClipboard
                     text={textToCopy}
-                    onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.' })}
+                    onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
                   >
                     <Button
                       startIcon={<CopyIcon />}

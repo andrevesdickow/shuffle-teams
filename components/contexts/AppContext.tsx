@@ -1,5 +1,9 @@
 import { createContext } from 'react'
 
-const AppContext = createContext(null)
+type AppContextProps = {
+  toggleTheme: () => void
+}
+
+const AppContext = createContext<AppContextProps>({} as AppContextProps)
 
 export default AppContext
