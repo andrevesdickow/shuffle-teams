@@ -1,45 +1,52 @@
-import { useMemo } from 'react'
 import { AppProps } from 'next/app'
-import { createTheme, ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
-// import theme from '../styles/theme'
+import { CssBaseline, ThemeProvider } from '@material-ui/core'
+import { withStyles } from '@material-ui/styles'
+import { CacheProvider, EmotionCache } from '@emotion/react'
 import AppContext from '../components/contexts/AppContext'
 
-import '../styles/globals.css'
-import usePersistedState from '../components/functions/usePersistedState'
+import usePersistedTheme from '../components/functions/usePersistedTheme'
+import global from '../styles/global'
 import light from '../styles/light'
 import dark from '../styles/dark'
 
-const cache = createCache({ key: 'css', prepend: true })
-cache.compat = true
+import createEmotionCache from '../components/functions/createEmotionCache'
 
-function MyApp(props: AppProps) {
-  const { Component, pageProps } = props
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache()
 
-  const [theme, setTheme] = usePersistedState('SHUFFLE_TEAMS_THEME', light)
+interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache,
+  pageProps: any
+}
 
-  const currentTheme = useMemo(
-    () => createTheme(theme),
-    [theme]
-  )
+function MyApp(props: MyAppProps) {
+  const {
+    Component,
+    emotionCache = clientSideEmotionCache,
+    pageProps
+  } = props
+
+  console.warn({ props })
+
+  const [theme, setTheme] = usePersistedTheme('SHUFFLE_TEAMS_THEME', 'light')
 
   const toggleTheme = () => {
-    setTheme(theme.palette.mode === 'light' ? dark : light)
+    setTheme(theme === 'light' ? 'dark' : 'light')
   }
 
+  const currentTheme = theme === 'light' ? light : dark
+
   return (
-    <CacheProvider value={cache}>
-      <AppContext.Provider value={{ toggleTheme }}>
-        <ThemeProvider theme={currentTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+    <CacheProvider value={emotionCache}>
+      <ThemeProvider theme={currentTheme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <AppContext.Provider value={{ toggleTheme }}>
           <Component {...pageProps} />
-        </ThemeProvider>
-      </AppContext.Provider>
+        </AppContext.Provider>
+      </ThemeProvider>
     </CacheProvider>
   )
 }
 
-export default MyApp
+export default withStyles(global)(MyApp)

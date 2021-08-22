@@ -1,6 +1,7 @@
+import { createTheme } from '@material-ui/core/styles'
 import { red } from '@material-ui/core/colors'
 
-const dark = {
+const dark = createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -20,6 +21,6 @@ const dark = {
   //     },
   //   },
   // },
-}
+})
 
 export default dark
