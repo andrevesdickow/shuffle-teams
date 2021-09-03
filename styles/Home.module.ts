@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material'
-import { createStyles } from '@mui/material/styles'
+import { createStyles } from '@mui/styles'
 
 const styles = (theme: Theme) => createStyles({
   main: {

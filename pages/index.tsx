@@ -117,7 +117,24 @@ const Home = (props: HomeProps) => {
 
     setLoading(true)
 
-    const listMembers = split(members, ',')
+    let listMembers = []
+
+    const regex = new RegExp(/,/)
+    const written = regex.test(members)
+
+    // se `true`, é porque foi escrito
+    // senão é colado de alguma conversa
+    if (written) {
+      listMembers = split(members, ',')
+    } else {
+      listMembers = split(members, /\n/)
+    }
+
+    console.warn({
+      listMembers,
+      test: written
+    })
+
     const shuffledMembers = shuffle(listMembers)
 
     let count = 1
@@ -128,9 +145,11 @@ const Home = (props: HomeProps) => {
         count = 1
       }
 
+      const integrant = replace(shuffledMembers[index], /[^a-zA-Z]+/, '')
+
       set(separedTeams, `team${count}`, [
         ...get(separedTeams, `team${count}`, []),
-        shuffledMembers[index]
+        integrant
       ])
 
       count++
@@ -206,7 +225,8 @@ const Home = (props: HomeProps) => {
 
           <Typography variant="h2" className={classes.description}>
             Digite os nomes dos integrantes separados por vírgula{' '}
-            <code className={classes.code}>,</code>
+            <code className={classes.code}>,</code>{' '}
+            ou cole aqui a lista de uma conversa 😀
           </Typography>
         </Box>
 
@@ -220,6 +240,7 @@ const Home = (props: HomeProps) => {
               fullWidth
               value={members}
               onChange={e => setMembers(e.target.value)}
+              onPaste={e => setMembers(get(e, 'target.value'))}
               size="small"
             />
           </Grid>
