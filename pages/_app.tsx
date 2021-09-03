@@ -1,6 +1,6 @@
 import { AppProps } from 'next/app'
-import { CssBaseline, ThemeProvider } from '@material-ui/core'
-import { withStyles } from '@material-ui/styles'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { withStyles } from '@mui/styles'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import AppContext from '../components/contexts/AppContext'
 
@@ -25,8 +25,6 @@ function MyApp(props: MyAppProps) {
     emotionCache = clientSideEmotionCache,
     pageProps
   } = props
-
-  console.warn({ props })
 
   const [theme, setTheme] = usePersistedTheme('SHUFFLE_TEAMS_THEME', 'light')
 

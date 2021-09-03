@@ -41,18 +41,18 @@ import {
   TextField,
   Toolbar,
   Typography,
-} from '@material-ui/core'
+} from '@mui/material'
 
-import { withStyles } from '@material-ui/styles'
+import { withStyles } from '@mui/styles'
 
 import {
   // Close as CloseIcon,
   BrightnessMedium as BrightnessMediumIcon,
   ContentCopy as CopyIcon,
   Shuffle as ShuffleIcon
-} from '@material-ui/icons'
+} from '@mui/icons-material'
 
-import LoadingButton from '@material-ui/lab/LoadingButton'
+import { LoadingButton } from '@mui/lab'
 
 import AppContext from '../components/contexts/AppContext'
 
@@ -91,7 +91,7 @@ const Home = (props: HomeProps) => {
     })
   }
 
-  const closeSnackbar = (event: SyntheticEvent<Element, Event>, reason: string): void => {
+  const closeSnackbar = (_event: SyntheticEvent<Element, Event>, reason: string): void => {
     if (reason === 'clickaway') {
       return
     }
