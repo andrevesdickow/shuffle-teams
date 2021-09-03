@@ -14,13 +14,6 @@ const light = createTheme({
       main: red.A400,
     },
   },
-  // components: {
-  //   MuiAppBar: {
-  //     defaultProps: {
-  //       enableColorOnDark: true,
-  //     },
-  //   },
-  // },
 })
 
 export default light
