@@ -147,10 +147,12 @@ const Home = (props: HomeProps) => {
 
       const integrant = replace(shuffledMembers[index], /[^a-zA-Z]+/, '')
 
-      set(separedTeams, `team${count}`, [
-        ...get(separedTeams, `team${count}`, []),
-        integrant
-      ])
+      if (!isEmpty(integrant)) {
+        set(separedTeams, `team${count}`, [
+          ...get(separedTeams, `team${count}`, []),
+          integrant
+        ])
+      }
 
       count++
     }
