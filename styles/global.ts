@@ -23,7 +23,7 @@ const styles = {
 
     '::selection': {
       color: '#ffffff',
-      backgroundColor: '#0070f3',
+      backgroundColor: '#008c80',
     }
   }
 }
