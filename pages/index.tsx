@@ -5,15 +5,8 @@ import {
   get,
   isEmpty,
   isNumber,
-  join,
-  last,
   map,
   mapValues,
-  replace,
-  set,
-  shuffle,
-  size,
-  split,
   toNumber,
   toString,
   trimStart,
@@ -55,6 +48,8 @@ import {
 import { LoadingButton } from '@mui/lab'
 
 import AppContext from '../components/contexts/AppContext'
+import generateTextToCopy from '../components/functions/generateTextToCopy'
+import shuffleTeams, { SeparatedTeamsType } from '../components/functions/shuffleTeams'
 
 import styles from '../styles/Home.module'
 
@@ -76,7 +71,7 @@ const Home = (props: HomeProps) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [members, setMembers] = useState<string>('')
   const [numberOfTeams, setNumberOfTeams] = useState<string>('2')
-  const [result, setResult] = useState<Object>()
+  const [result, setResult] = useState<SeparatedTeamsType>({})
   const [snackbar, setSnackbar] = useState<SnackbarProps>({
     open: false,
     message: '',
@@ -102,7 +97,7 @@ const Home = (props: HomeProps) => {
     }))
   }
 
-  function shuffleTeams(): void {
+  function shuffle(): void {
     if (isEmpty(members)) {
       openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
       return
@@ -117,45 +112,8 @@ const Home = (props: HomeProps) => {
 
     setLoading(true)
 
-    let listMembers = []
-
-    const regex = new RegExp(/,/)
-    const written = regex.test(members)
-
-    // se `true`, é porque foi escrito
-    // senão é colado de alguma conversa
-    if (written) {
-      listMembers = split(members, ',')
-    } else {
-      listMembers = split(members, /\n/)
-    }
-
-    console.warn({
-      listMembers,
-      test: written
-    })
-
-    const shuffledMembers = shuffle(listMembers)
-
-    let count = 1
-    const separedTeams = {}
-
-    for (let index = 0; index < size(shuffledMembers); index++) {
-      if (count > teams) {
-        count = 1
-      }
-
-      const integrant = replace(shuffledMembers[index], /[^a-zA-Z]+/, '')
-
-      set(separedTeams, `team${count}`, [
-        ...get(separedTeams, `team${count}`, []),
-        integrant
-      ])
-
-      count++
-    }
-
-    setResult(separedTeams)
+    const separatedTeams = shuffleTeams(members, teams)
+    setResult(separatedTeams)
 
     setLoading(false)
   }
@@ -170,14 +128,7 @@ const Home = (props: HomeProps) => {
   }, [result])
 
   const textToCopy = useMemo(() => {
-    if (isEmpty(teams)) {
-      return ''
-    }
-
-    const text = map(teams, (team, teamIndex) => (
-      `Equipe ${teamIndex + 1}\n${map(team, (integrant, integrantIndex) => `${integrantIndex + 1}. ${trimStart(integrant)}${integrant === last(team) ? '\n\n' : '\n'}`)}`
-    ))
-    return replace(join(text, ''), /,/g, '')
+    return generateTextToCopy(teams)
   }, [teams])
 
   return (
@@ -188,7 +139,7 @@ const Home = (props: HomeProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <AppBar position="static">
+      <AppBar>
         <Toolbar>
           <Typography
             variant="h6"
@@ -264,7 +215,7 @@ const Home = (props: HomeProps) => {
               loadingPosition="start"
               startIcon={<ShuffleIcon />}
               variant="outlined"
-              onClick={shuffleTeams}
+              onClick={shuffle}
             // size="small"
             >
               Sortear
