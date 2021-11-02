@@ -1,10 +1,10 @@
+import { useState } from 'react'
 import { AppProps } from 'next/app'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { withStyles } from '@mui/styles'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import AppContext from '../components/contexts/AppContext'
 
-import usePersistedTheme from '../components/functions/usePersistedTheme'
 import global from '../styles/global'
 import light from '../styles/light'
 import dark from '../styles/dark'
@@ -26,7 +26,8 @@ function MyApp(props: MyAppProps) {
     pageProps
   } = props
 
-  const [theme, setTheme] = usePersistedTheme('SHUFFLE_TEAMS_THEME', 'light')
+  // const [theme, setTheme] = usePersistedTheme('SHUFFLE_TEAMS_THEME', 'light')
+  const [theme, setTheme] = useState<string>('light')
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light')
