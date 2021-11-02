@@ -1,7 +1,9 @@
-import { useContext, useMemo, useState, SyntheticEvent } from 'react'
+import { useContext, useMemo, useState, SyntheticEvent, ChangeEvent } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import {
+  camelCase,
+  cloneDeep,
   get,
   isEmpty,
   isNumber,
@@ -19,12 +21,18 @@ import {
   AppBar,
   Box,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
   Container,
+  FormControlLabel,
   Grid,
   IconButton,
-  // Link,
   Paper,
+  Rating,
   Snackbar,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -39,17 +47,23 @@ import {
 import { withStyles } from '@mui/styles'
 
 import {
-  // Close as CloseIcon,
   BrightnessMedium as BrightnessMediumIcon,
   ContentCopy as CopyIcon,
-  Shuffle as ShuffleIcon
+  Shuffle as ShuffleIcon,
+  Star as StarIcon
 } from '@mui/icons-material'
 
 import { LoadingButton } from '@mui/lab'
 
 import AppContext from '../components/contexts/AppContext'
 import generateTextToCopy from '../components/functions/generateTextToCopy'
-import shuffleTeams, { SeparatedTeamsType } from '../components/functions/shuffleTeams'
+import {
+  organizeMembersToRating,
+  shuffleTeams,
+  shuffleTeamsByRating,
+  SeparatedTeamsType,
+  IntegrantType
+} from '../components/functions/shuffleTeams'
 
 import styles from '../styles/Home.module'
 
@@ -69,14 +83,29 @@ const Home = (props: HomeProps) => {
   const { toggleTheme } = useContext(AppContext)
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [withRating, setWithRating] = useState<boolean>(false)
   const [members, setMembers] = useState<string>('')
   const [numberOfTeams, setNumberOfTeams] = useState<string>('2')
+  const [membersToRating, setMembersToRating] = useState<IntegrantType[]>([])
   const [result, setResult] = useState<SeparatedTeamsType>({})
   const [snackbar, setSnackbar] = useState<SnackbarProps>({
     open: false,
     message: '',
     type: 'warning'
   })
+
+  const teams = useMemo(() => {
+    const aux: IntegrantType[][] = []
+    mapValues(result, (teams: IntegrantType[]) => {
+      aux.push(teams)
+    })
+
+    return aux
+  }, [result])
+
+  const textToCopy = useMemo(() => {
+    return generateTextToCopy(teams)
+  }, [teams])
 
   const openSnackbar = ({ type, message, open = true }: SnackbarProps): void => {
     setSnackbar({
@@ -97,7 +126,11 @@ const Home = (props: HomeProps) => {
     }))
   }
 
-  function shuffle(): void {
+  /**
+   * Função executada ao clicar em "Sortear"
+   * @returns `void`
+   */
+  function handleShuffle(): void {
     if (isEmpty(members)) {
       openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
       return
@@ -118,28 +151,67 @@ const Home = (props: HomeProps) => {
     setLoading(false)
   }
 
-  const teams = useMemo(() => {
-    const aux: string[][] = []
-    mapValues(result, (teams: string[]) => {
-      aux.push(teams)
-    })
+  /**
+   * Função executada ao cliar em "Sortear"
+   * @returns `void`
+   */
+  function handleShuffleByRating(): void {
+    setLoading(true)
 
-    return aux
-  }, [result])
+    const teams = toNumber(numberOfTeams)
+    const separatedTeams = shuffleTeamsByRating(membersToRating, teams)
+    setResult(separatedTeams)
 
-  const textToCopy = useMemo(() => {
-    return generateTextToCopy(teams)
-  }, [teams])
+    setLoading(false)
+  }
+
+  /**
+   * Função executada ao clicar em "Adicionar pontuação"
+   * @returns `void`
+   */
+  function handleRating(): void {
+    if (isEmpty(members)) {
+      openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
+      return
+    }
+
+    const teams = toNumber(numberOfTeams)
+
+    if (!isNumber(teams) || teams <= 0) {
+      openSnackbar({ type: 'error', message: 'Informe a quantidade de equipes.', open: true })
+      return
+    }
+
+    const separatedMembers = organizeMembersToRating(members)
+    setMembersToRating(separatedMembers)
+  }
+
+  /**
+   * Função executada ao trocar o switch se irá ter pontuação ou não
+   * @param _event ChangeEvent
+   * @param checked boolean
+   */
+  function handleChangeWithRating(_event: ChangeEvent, checked: boolean) {
+    setWithRating(checked)
+    setResult({})
+    setMembersToRating([])
+  }
+
+  function handleChangeIntegrantRating(rating: number | null, index: number) {
+    const clone = cloneDeep(membersToRating)
+    clone[index].rating = rating
+    setMembersToRating(clone)
+  }
 
   return (
     <Box className={classes.main}>
       <Head>
-        <title>Sorteador de Times</title>
+        <title>Sortchêador de Times</title>
         <meta name="description" content="Sorteador de Times para qualquer esporte." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <AppBar>
+      <AppBar position="static">
         <Toolbar>
           <Typography
             variant="h6"
@@ -147,12 +219,10 @@ const Home = (props: HomeProps) => {
             component="div"
           // sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            Sorteador de Times
+            Sor<b>tchê</b>ador de <b>Times</b>
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Box
-          // sx={{ display: { xs: 'none', md: 'flex' } }}
-          >
+          <Box>
             <IconButton
               size="large"
               edge="end"
@@ -171,7 +241,7 @@ const Home = (props: HomeProps) => {
       <Container maxWidth="sm" className={classes.container}>
         <Box className={classes.header}>
           <Typography variant="h1" className={classes.title}>
-            Sorteador de <b>Times!</b>
+            Sor<b>tchê</b>ador de <b>Times!</b>
           </Typography>
 
           <Typography variant="h2" className={classes.description}>
@@ -182,6 +252,17 @@ const Home = (props: HomeProps) => {
         </Box>
 
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={withRating}
+                  onChange={handleChangeWithRating}
+                />
+              }
+              label="Com pontuação dos jogadores?"
+            />
+          </Grid>
           <Grid item xs={12}>
             <TextField
               id="integrants"
@@ -210,16 +291,31 @@ const Home = (props: HomeProps) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <LoadingButton
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<ShuffleIcon />}
-              variant="outlined"
-              onClick={shuffle}
-            // size="small"
-            >
-              Sortear
-            </LoadingButton>
+            {
+              withRating
+                ? (
+                  <LoadingButton
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<StarIcon />}
+                    variant="outlined"
+                    onClick={handleRating}
+                  >
+                    Adicionar pontuação
+                  </LoadingButton>
+                )
+                : (
+                  <LoadingButton
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<ShuffleIcon />}
+                    variant="outlined"
+                    onClick={handleShuffle}
+                  >
+                    Sortear
+                  </LoadingButton>
+                )
+            }
             &nbsp;&nbsp;
             {
               !isEmpty(textToCopy)
@@ -244,9 +340,45 @@ const Home = (props: HomeProps) => {
         </Grid>
 
         {
-          !isEmpty(result)
-            ? (
-              <Grid container spacing={1} className={classes.table}>
+          (withRating && !isEmpty(membersToRating)) && (
+            <Card className={classes.cardMembersToRating}>
+              <CardHeader title="Informe a pontuação dos jogadores" />
+              <CardContent>
+                {
+                  map(membersToRating, (memberToRating, indexMemberToRating) => (
+                    <Box key={memberToRating.name} className={classes.membersToRating}>
+                      <Rating
+                        name={camelCase(memberToRating.name)}
+                        value={memberToRating.rating}
+                        onChange={(_event: React.SyntheticEvent<Element, Event>, newValue: number | null) => {
+                          handleChangeIntegrantRating(newValue, indexMemberToRating)
+                        }}
+                      />
+                      <Typography component="legend">{memberToRating.name}</Typography>
+                    </Box>
+                  ))
+                }
+              </CardContent>
+              <CardActions>
+                <LoadingButton
+                  loading={loading}
+                  loadingPosition="start"
+                  startIcon={<ShuffleIcon />}
+                  variant="outlined"
+                  onClick={handleShuffleByRating}
+                >
+                  Sortear
+                </LoadingButton>
+              </CardActions>
+            </Card>
+          )
+        }
+
+        {
+          !isEmpty(result) && (
+            <>
+              <br />
+              <Grid container spacing={1}>
                 {
                   map(teams, (team, teamIndex) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={`Equipe ${teamIndex + 1}`}>
@@ -261,14 +393,14 @@ const Home = (props: HomeProps) => {
                             {
                               map(team, (integrant, integrantIndex) => (
                                 <TableRow
-                                  key={integrant}
+                                  key={integrant.name}
                                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                   <TableCell
                                     component="th"
                                     scope="row"
                                   >
-                                    {integrantIndex + 1}. {trimStart(toString(integrant))}
+                                    {integrantIndex + 1}. {trimStart(toString(integrant.name))}
                                   </TableCell>
                                 </TableRow>
                               ))
@@ -280,8 +412,8 @@ const Home = (props: HomeProps) => {
                   ))
                 }
               </Grid>
-            )
-            : null
+            </>
+          )
         }
       </Container>
 

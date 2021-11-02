@@ -4,7 +4,7 @@ import { createStyles } from '@mui/styles'
 const styles = (theme: Theme) => createStyles({
   main: {
     minHeight: '100vh',
-    height: '100vh',
+    height: 'auto',
   },
 
   container: {
@@ -12,6 +12,10 @@ const styles = (theme: Theme) => createStyles({
     flexDirection: 'column',
     height: 'calc(100% - 64px)',
     justifyContent: 'center',
+
+    [theme.breakpoints.down('sm')]: {
+      height: 'auto'
+    }
   },
 
   footer: {
@@ -69,16 +73,25 @@ const styles = (theme: Theme) => createStyles({
     textTransform: 'capitalize',
   },
 
-  table: {
-    'margin-top': '1rem',
-  },
-
   grid: {
     '@media (max-width: 600px)': {
       width: '100%',
       flexDirection: 'column',
     }
   },
+
+  cardMembersToRating: {
+    marginTop: theme.spacing(2),
+  },
+
+  membersToRating: {
+    display: 'flex',
+    alignItems: 'center',
+
+    '& legend': {
+      marginLeft: theme.spacing(1)
+    }
+  }
 })
 
 export default styles
