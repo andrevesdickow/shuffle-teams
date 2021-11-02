@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState, SyntheticEvent, ChangeEvent } from 'react'
+import { useMemo, useState, SyntheticEvent, ChangeEvent } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import {
@@ -18,7 +18,6 @@ import Head from 'next/head'
 import {
   Alert,
   AlertColor,
-  AppBar,
   Box,
   Button,
   Card,
@@ -28,7 +27,6 @@ import {
   Container,
   FormControlLabel,
   Grid,
-  IconButton,
   Paper,
   Rating,
   Snackbar,
@@ -40,14 +38,15 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Toolbar,
   Typography,
+  Theme
 } from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { withStyles } from '@mui/styles'
 
 import {
-  BrightnessMedium as BrightnessMediumIcon,
+  Close as CloseIcon,
   ContentCopy as CopyIcon,
   Shuffle as ShuffleIcon,
   Star as StarIcon
@@ -55,17 +54,17 @@ import {
 
 import { LoadingButton } from '@mui/lab'
 
-import AppContext from '../components/contexts/AppContext'
-import generateTextToCopy from '../components/functions/generateTextToCopy'
+import generateTextToCopy from '../functions/generateTextToCopy'
 import {
   organizeMembersToRating,
   shuffleTeams,
   shuffleTeamsByRating,
   SeparatedTeamsType,
   IntegrantType
-} from '../components/functions/shuffleTeams'
+} from '../functions/shuffleTeams'
 
 import styles from '../styles/Home.module'
+import Header from '../components/Header'
 
 type HomeProps = {
   classes: any
@@ -80,7 +79,7 @@ type SnackbarProps = {
 const Home = (props: HomeProps) => {
   const { classes } = props
 
-  const { toggleTheme } = useContext(AppContext)
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   const [loading, setLoading] = useState<boolean>(false)
   const [withRating, setWithRating] = useState<boolean>(false)
@@ -188,8 +187,8 @@ const Home = (props: HomeProps) => {
 
   /**
    * Função executada ao trocar o switch se irá ter pontuação ou não
-   * @param _event ChangeEvent
-   * @param checked boolean
+   * @param _event evento
+   * @param checked marcado
    */
   function handleChangeWithRating(_event: ChangeEvent, checked: boolean) {
     setWithRating(checked)
@@ -197,10 +196,24 @@ const Home = (props: HomeProps) => {
     setMembersToRating([])
   }
 
+  /**
+   * Função que altera a pontuação do jogador
+   * @param rating pontuação
+   * @param index índice
+   */
   function handleChangeIntegrantRating(rating: number | null, index: number) {
     const clone = cloneDeep(membersToRating)
     clone[index].rating = rating
     setMembersToRating(clone)
+  }
+
+  /**
+   * Função que limpa os resultados
+   */
+  function clearResults() {
+    setResult({})
+    setMembersToRating([])
+    setMembers('')
   }
 
   return (
@@ -211,32 +224,7 @@ const Home = (props: HomeProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-          // sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            Sor<b>tchê</b>ador de <b>Times</b>
-          </Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="toggle theme"
-              aria-controls="toggleTheme"
-              aria-haspopup="true"
-              onClick={toggleTheme}
-              color="inherit"
-            >
-              <BrightnessMediumIcon />
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <Header />
 
       <Container maxWidth="sm" className={classes.container}>
         <Box className={classes.header}>
@@ -300,6 +288,8 @@ const Home = (props: HomeProps) => {
                     startIcon={<StarIcon />}
                     variant="outlined"
                     onClick={handleRating}
+                    fullWidth={isMobile}
+                    className={classes.button}
                   >
                     Adicionar pontuação
                   </LoadingButton>
@@ -311,30 +301,43 @@ const Home = (props: HomeProps) => {
                     startIcon={<ShuffleIcon />}
                     variant="outlined"
                     onClick={handleShuffle}
+                    fullWidth={isMobile}
+                    className={classes.button}
                   >
                     Sortear
                   </LoadingButton>
                 )
             }
-            &nbsp;&nbsp;
             {
-              !isEmpty(textToCopy)
-                ? (
-                  <CopyToClipboard
-                    text={textToCopy}
-                    onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
+              (!withRating && !isEmpty(textToCopy)) && (
+                <CopyToClipboard
+                  text={textToCopy}
+                  onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
+                >
+                  <Button
+                    startIcon={<CopyIcon />}
+                    variant="outlined"
+                    onClick={() => { }}
+                    fullWidth={isMobile}
+                    className={classes.button}
                   >
-                    <Button
-                      startIcon={<CopyIcon />}
-                      variant="outlined"
-                      onClick={() => { }}
-                    // size="small"
-                    >
-                      Copiar resultado
-                    </Button>
-                  </CopyToClipboard>
-                )
-                : null
+                    Copiar resultado
+                  </Button>
+                </CopyToClipboard>
+              )
+            }
+            {
+              !isEmpty(result) && (
+                <Button
+                  startIcon={<CloseIcon />}
+                  variant="outlined"
+                  onClick={clearResults}
+                  fullWidth={isMobile}
+                  className={classes.button}
+                >
+                  Limpar
+                </Button>
+              )
             }
           </Grid>
         </Grid>
@@ -353,6 +356,7 @@ const Home = (props: HomeProps) => {
                         onChange={(_event: React.SyntheticEvent<Element, Event>, newValue: number | null) => {
                           handleChangeIntegrantRating(newValue, indexMemberToRating)
                         }}
+                        size={isMobile ? 'large' : 'medium'}
                       />
                       <Typography component="legend">{memberToRating.name}</Typography>
                     </Box>
@@ -366,9 +370,29 @@ const Home = (props: HomeProps) => {
                   startIcon={<ShuffleIcon />}
                   variant="outlined"
                   onClick={handleShuffleByRating}
+                  fullWidth={isMobile}
+                  className={classes.button}
                 >
                   Sortear
                 </LoadingButton>
+                {
+                  !isEmpty(textToCopy) && (
+                    <CopyToClipboard
+                      text={textToCopy}
+                      onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
+                    >
+                      <Button
+                        startIcon={<CopyIcon />}
+                        variant="outlined"
+                        onClick={() => { }}
+                        fullWidth={isMobile}
+                        className={classes.button}
+                      >
+                        Copiar resultado
+                      </Button>
+                    </CopyToClipboard>
+                  )
+                }
               </CardActions>
             </Card>
           )
@@ -417,20 +441,6 @@ const Home = (props: HomeProps) => {
         }
       </Container>
 
-      {/* <footer className={classes.footer}>
-        <Link
-          color="inherit"
-          underline="hover"
-          href="https://vercel.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={classes.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </Link >
-      </footer> */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}

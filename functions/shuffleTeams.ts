@@ -49,8 +49,6 @@ export function shuffleTeams(members: string, numOfTeams: number): SeparatedTeam
   let count = 1
   const separatedTeams: SeparatedTeamsType = {}
 
-  console.warn({ listMembers, written })
-
   for (let index = 0; index < size(shuffledMembers); index++) {
     if (count > numOfTeams) {
       count = 1

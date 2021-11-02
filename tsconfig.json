@@ -18,7 +18,10 @@
     "noUnusedParameters": true,
     "preserveConstEnums": true,
     "removeComments": false,
-    "sourceMap": true
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",

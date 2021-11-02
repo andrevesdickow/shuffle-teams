@@ -8,30 +8,14 @@ const styles = (theme: Theme) => createStyles({
   },
 
   container: {
+    height: '100%',
+    minHeight: 'calc(100vh - 64px)',
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100% - 64px)',
     justifyContent: 'center',
 
     [theme.breakpoints.down('sm')]: {
       height: 'auto'
-    }
-  },
-
-  footer: {
-    width: '100%',
-    height: '100px',
-    borderTop: '1px solid #eaeaea',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
-    '& a': {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexGrow: 1,
     }
   },
 
@@ -62,6 +46,23 @@ const styles = (theme: Theme) => createStyles({
     padding: '0.75rem',
     fontSize: '1.1rem',
     fontFamily: 'Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace',
+  },
+
+  button: {
+    [theme.breakpoints.up('sm')]: {
+      marginRight: theme.spacing(1),
+
+      '& > :first-child': {
+        marginRight: 0
+      }
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(1),
+
+      '& > :nth-child(1)': {
+        marginTop: 0
+      }
+    }
   },
 
   logo: {
