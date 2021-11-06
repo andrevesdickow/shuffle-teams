@@ -76,7 +76,8 @@ export function shuffleTeams(members: string, numOfTeams: number): SeparatedTeam
 }
 
 export function shuffleTeamsByRating(members: IntegrantType[], numOfTeams: number): SeparatedTeamsType {
-  const grouped = groupBy(members, 'rating')
+  const ordered = orderBy(members, ['rating'], ['desc'])
+  const grouped = groupBy(ordered, 'rating')
 
   let count = 1
   const separatedTeams: SeparatedTeamsType = {}
