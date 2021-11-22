@@ -22,7 +22,7 @@ export default function Header() {
           noWrap
           component="div"
         >
-          Sor<b>tchê</b>ador de <b>Times</b>
+          Sor<b>tchê</b>ador
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <Box>

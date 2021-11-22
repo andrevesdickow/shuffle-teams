@@ -9,6 +9,7 @@ import {
   isNumber,
   map,
   mapValues,
+  pick,
   toNumber,
   toString,
   trimStart,
@@ -65,6 +66,8 @@ import {
 
 import styles from '../styles/Home.module'
 import Header from '../components/Header'
+import { GetStaticPropsContext } from 'next'
+import { useTranslations } from 'use-intl'
 
 type HomeProps = {
   classes: any
@@ -78,6 +81,8 @@ type SnackbarProps = {
 
 const Home = (props: HomeProps) => {
   const { classes } = props
+
+  const t = useTranslations('home')
 
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
@@ -131,14 +136,14 @@ const Home = (props: HomeProps) => {
    */
   function handleShuffle(): void {
     if (isEmpty(members)) {
-      openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
+      openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
       return
     }
 
     const teams = toNumber(numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
-      openSnackbar({ type: 'error', message: 'Informe a quantidade de equipes.', open: true })
+      openSnackbar({ type: 'error', message: t('informTeamQuantity'), open: true })
       return
     }
 
@@ -170,14 +175,14 @@ const Home = (props: HomeProps) => {
    */
   function handleRating(): void {
     if (isEmpty(members)) {
-      openSnackbar({ type: 'error', message: 'Informe os integrantes da equipe.', open: true })
+      openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
       return
     }
 
     const teams = toNumber(numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
-      openSnackbar({ type: 'error', message: 'Informe a quantidade de equipes.', open: true })
+      openSnackbar({ type: 'error', message: t('informTeamQuantity'), open: true })
       return
     }
 
@@ -219,7 +224,7 @@ const Home = (props: HomeProps) => {
   return (
     <Box className={classes.main}>
       <Head>
-        <title>Sortchêador de Times</title>
+        <title>Sortchêador</title>
         <meta name="description" content="Sorteador de Times para qualquer esporte." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -229,13 +234,13 @@ const Home = (props: HomeProps) => {
       <Container maxWidth="sm" className={classes.container}>
         <Box className={classes.header}>
           <Typography variant="h1" className={classes.title}>
-            Sor<b>tchê</b>ador de <b>Times!</b>
+            Sor<b>tchê</b>ador
           </Typography>
 
           <Typography variant="h2" className={classes.description}>
-            Digite os nomes dos integrantes separados por vírgula{' '}
+            {`${t('typeNames')} `}
             <code className={classes.code}>,</code>{' '}
-            ou cole aqui a lista de uma conversa 😀
+            {t('orPaste')} 😀
           </Typography>
         </Box>
 
@@ -248,13 +253,13 @@ const Home = (props: HomeProps) => {
                   onChange={handleChangeWithRating}
                 />
               }
-              label="Com pontuação dos jogadores?"
+              label={t('withScore')}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               id="integrants"
-              label="Integrantes"
+              label={t('members')}
               multiline
               rows={4}
               fullWidth
@@ -267,7 +272,7 @@ const Home = (props: HomeProps) => {
           <Grid item xs={12}>
             <TextField
               id="numberOsTeams"
-              label="Nº de Equipes"
+              label={t('numberOfTeams')}
               type="number"
               InputLabelProps={{
                 shrink: true,
@@ -291,7 +296,7 @@ const Home = (props: HomeProps) => {
                     fullWidth={isMobile}
                     className={classes.button}
                   >
-                    Adicionar pontuação
+                    {t('addScore')}
                   </LoadingButton>
                 )
                 : (
@@ -304,7 +309,7 @@ const Home = (props: HomeProps) => {
                     fullWidth={isMobile}
                     className={classes.button}
                   >
-                    Sortear
+                    {t('shuffle')}
                   </LoadingButton>
                 )
             }
@@ -312,7 +317,7 @@ const Home = (props: HomeProps) => {
               (!withRating && !isEmpty(textToCopy)) && (
                 <CopyToClipboard
                   text={textToCopy}
-                  onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
+                  onCopy={() => openSnackbar({ type: 'success', message: t('resultCopied'), open: true })}
                 >
                   <Button
                     startIcon={<CopyIcon />}
@@ -321,7 +326,7 @@ const Home = (props: HomeProps) => {
                     fullWidth={isMobile}
                     className={classes.button}
                   >
-                    Copiar resultado
+                    {t('copyResult')}
                   </Button>
                 </CopyToClipboard>
               )
@@ -335,7 +340,7 @@ const Home = (props: HomeProps) => {
                   fullWidth={isMobile}
                   className={classes.button}
                 >
-                  Limpar
+                  {t('clear')}
                 </Button>
               )
             }
@@ -345,7 +350,7 @@ const Home = (props: HomeProps) => {
         {
           (withRating && !isEmpty(membersToRating)) && (
             <Card className={classes.cardMembersToRating}>
-              <CardHeader title="Informe a pontuação dos jogadores" />
+              <CardHeader title={t('enterPlayerScores')} />
               <CardContent>
                 {
                   map(membersToRating, (memberToRating, indexMemberToRating) => (
@@ -373,13 +378,13 @@ const Home = (props: HomeProps) => {
                   fullWidth={isMobile}
                   className={classes.button}
                 >
-                  Sortear
+                  {t('shuffle')}
                 </LoadingButton>
                 {
                   !isEmpty(textToCopy) && (
                     <CopyToClipboard
                       text={textToCopy}
-                      onCopy={() => openSnackbar({ type: 'success', message: 'Resultado copiado com sucesso.', open: true })}
+                      onCopy={() => openSnackbar({ type: 'success', message: t('resultCopied'), open: true })}
                     >
                       <Button
                         startIcon={<CopyIcon />}
@@ -388,7 +393,7 @@ const Home = (props: HomeProps) => {
                         fullWidth={isMobile}
                         className={classes.button}
                       >
-                        Copiar resultado
+                        {t('copyResult')}
                       </Button>
                     </CopyToClipboard>
                   )
@@ -407,10 +412,10 @@ const Home = (props: HomeProps) => {
                   map(teams, (team, teamIndex) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={`Equipe ${teamIndex + 1}`}>
                       <TableContainer component={Paper}>
-                        <Table size="small" aria-label="Resultado das equipes">
+                        <Table size="small" aria-label={t('teamResults')}>
                           <TableHead>
                             <TableRow>
-                              <TableCell>Equipe {teamIndex + 1}</TableCell>
+                              <TableCell>{t('team')} {teamIndex + 1}</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -465,3 +470,14 @@ const Home = (props: HomeProps) => {
 }
 
 export default withStyles(styles)(Home)
+
+export async function getStaticProps({ locale }: GetStaticPropsContext) {
+  return {
+    props: {
+      messages: pick(
+        await import(`../locales/${locale}.json`),
+        ['home']
+      )
+    }
+  };
+}

@@ -1,0 +1,19 @@
+{
+  "home": {
+    "typeNames": "Digite os nomes dos integrantes separados por vírgula",
+    "orPaste": "ou cole aqui a lista de uma conversa",
+    "withScore": "Com pontuação dos jogadores?",
+    "members": "Integrantes",
+    "numberOfTeams": "Nº de Equipes",
+    "addScore": "Adicionar pontuação",
+    "shuffle": "Sortear",
+    "resultCopied": "Resultado copiado com sucesso.",
+    "copyResult": "Copiar resultado",
+    "clear": "Limpar",
+    "enterPlayerScores": "Informe a pontuação dos jogadores",
+    "teamResults": "Resultado das equipes",
+    "team": "Equipe",
+    "informTeamMembers": "Informe os integrantes da equipe",
+    "informTeamQuantity": "Informe a quantidade de equipes"
+  }
+}

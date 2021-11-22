@@ -1,0 +1,19 @@
+{
+  "home": {
+    "typeNames": "Enter the names of the members separated by a comma",
+    "orPaste": "or paste a conversation list here",
+    "withScore": "With player scores?",
+    "members": "Members",
+    "numberOfTeams": "Number of Teams",
+    "addScore": "Add score",
+    "shuffle": "Raffle",
+    "resultCopied": "Result copied successfully.",
+    "copyResult": "Copy result",
+    "clear": "Clear",
+    "enterPlayerScores": "Enter player scores",
+    "teamResults": "Team results",
+    "team": "Team",
+    "informTeamMembers": "Inform team members",
+    "informTeamQuantity": "Enter the number of teams"
+  }
+}
