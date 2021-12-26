@@ -15,15 +15,7 @@ import flow from 'lodash/fp/flow'
 import mapFP from 'lodash/fp/map'
 import replaceFP from 'lodash/fp/replace'
 import trimFP from 'lodash/fp/trim'
-
-export type IntegrantType = {
-  name: string;
-  rating: number | null;
-}
-
-export type SeparatedTeamsType = {
-  [name: string]: IntegrantType[];
-}
+import { IntegrantType, SeparatedTeamsType } from '../interfaces/Teams'
 
 /**
  * Sorteia os membros entre as equipes

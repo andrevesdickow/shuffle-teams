@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AppProps } from 'next/app'
 import { NextIntlProvider } from 'next-intl'
+import { RecoilRoot } from 'recoil'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { withStyles } from '@mui/styles'
 import AppContext from '../contexts/AppContext'
@@ -21,12 +22,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <NextIntlProvider messages={pageProps.messages}>
-      <ThemeProvider theme={currentTheme}>
-        <CssBaseline />
-        <AppContext.Provider value={{ toggleTheme }}>
-          <Component {...pageProps} />
-        </AppContext.Provider>
-      </ThemeProvider>
+      <RecoilRoot>
+        <ThemeProvider theme={currentTheme}>
+          <CssBaseline />
+          <AppContext.Provider value={{ toggleTheme }}>
+            <Component {...pageProps} />
+          </AppContext.Provider>
+        </ThemeProvider>
+      </RecoilRoot>
     </NextIntlProvider>
   )
 }
