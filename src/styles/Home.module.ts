@@ -79,19 +79,6 @@ const styles = (theme: Theme) => createStyles({
       width: '100%',
       flexDirection: 'column',
     }
-  },
-
-  cardMembersToRating: {
-    marginTop: theme.spacing(2),
-  },
-
-  membersToRating: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& legend': {
-      marginLeft: theme.spacing(1)
-    }
   }
 })
 
