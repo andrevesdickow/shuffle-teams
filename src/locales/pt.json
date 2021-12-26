@@ -17,7 +17,10 @@
     "informTeamQuantity": "Informe a quantidade de equipes"
   },
   "generic": {
-    "portuguese": "Português",
-    "english": "Inglês"
+    "pt": "Português",
+    "en": "Inglês",
+    "changeLanguage": "Alterar Idioma",
+    "darkMode": "Modo Escuro",
+    "lightMode": "Modo Claro"
   }
 }

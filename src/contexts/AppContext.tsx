@@ -1,7 +1,8 @@
 import { createContext } from 'react'
 
 type AppContextProps = {
-  toggleTheme: () => void
+  toggleTheme: () => void;
+  currentTheme: 'light' | 'dark'
 }
 
 const AppContext = createContext<AppContextProps>({} as AppContextProps)

@@ -12,7 +12,7 @@ import dark from '../styles/dark'
 
 function MyApp({ Component, pageProps }: AppProps) {
   // const [theme, setTheme] = usePersistedTheme('SHUFFLE_TEAMS_THEME', 'light')
-  const [theme, setTheme] = useState<string>('light')
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light')
@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <RecoilRoot>
         <ThemeProvider theme={currentTheme}>
           <CssBaseline />
-          <AppContext.Provider value={{ toggleTheme }}>
+          <AppContext.Provider value={{ toggleTheme, currentTheme: theme }}>
             <Component {...pageProps} />
           </AppContext.Provider>
         </ThemeProvider>

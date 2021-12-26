@@ -17,7 +17,10 @@
     "informTeamQuantity": "Enter the number of teams"
   },
   "generic": {
-    "portuguese": "Portuguese",
-    "english": "English"
+    "pt": "Portuguese",
+    "en": "English",
+    "changeLanguage": "Change Language",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
   }
 }
