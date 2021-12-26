@@ -8,4 +8,5 @@ export interface IFormData {
 
 export type FormProps = {
   openSnackbar: (snackbarProps: SnackbarProps) => void;
+  textToCopy: string;
 }

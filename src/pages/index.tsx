@@ -1,6 +1,6 @@
 import { GetStaticPropsContext } from 'next'
+
 import { useMemo, useState, SyntheticEvent } from 'react'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import Head from 'next/head'
 import {
@@ -17,9 +17,9 @@ import { useTranslations } from 'use-intl'
 import {
   Alert,
   Box,
-  Button,
   Container,
   Grid,
+  IconButton,
   Paper,
   Snackbar,
   Table,
@@ -29,14 +29,10 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Theme
+  SnackbarCloseReason
 } from '@mui/material'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { withStyles } from '@mui/styles'
-import {
-  Close as CloseIcon,
-  ContentCopy as CopyIcon
-} from '@mui/icons-material'
+import { Close as CloseIcon } from '@mui/icons-material'
 
 import { formAtom } from '../atoms/formAtom'
 import { membersToRatingAtom } from '../atoms/membersToRatingAtom'
@@ -60,8 +56,6 @@ const Home = (props: HomeProps) => {
   const resultState = useRecoilValue(resultAtom)
   const membersToRatingState = useRecoilValue(membersToRatingAtom)
 
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
-
   const [snackbar, setSnackbar] = useState<SnackbarProps>({
     open: false,
     message: '',
@@ -81,18 +75,29 @@ const Home = (props: HomeProps) => {
     return generateTextToCopy(teams)
   }, [teams])
 
-  const openSnackbar = ({ type, message, open = true }: SnackbarProps): void => {
+  const openSnackbar = ({
+    type,
+    message,
+    open = true,
+    autoHideDuration = 5000
+  }: SnackbarProps): void => {
     setSnackbar({
       open,
       type,
-      message
+      message,
+      autoHideDuration
     })
   }
 
-  const closeSnackbar = (_event: SyntheticEvent<Element, Event>, reason: string): void => {
+  const closeSnackbar = (
+    event: Event | SyntheticEvent<any, Event>,
+    reason?: SnackbarCloseReason | undefined
+  ): void => {
     if (reason === 'clickaway') {
       return
     }
+
+    event.preventDefault()
 
     setSnackbar(prevState => ({
       ...prevState,
@@ -100,14 +105,16 @@ const Home = (props: HomeProps) => {
     }))
   }
 
-  /**
-   * Função que limpa os resultados
-   */
-  function clearResults() {
-    // setResult({})
-    // setMembersToRating([])
-    // setMembers('')
-  }
+  const snackbarAction = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={closeSnackbar}
+    >
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  )
 
   return (
     <Box className={classes.main}>
@@ -132,43 +139,10 @@ const Home = (props: HomeProps) => {
           </Typography>
         </Box>
 
-        <Form openSnackbar={openSnackbar} />
-
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            {
-              (!formState.withRating && !isEmpty(textToCopy)) && (
-                <CopyToClipboard
-                  text={textToCopy}
-                  onCopy={() => openSnackbar({ type: 'success', message: t('resultCopied'), open: true })}
-                >
-                  <Button
-                    startIcon={<CopyIcon />}
-                    variant="outlined"
-                    onClick={() => { }}
-                    fullWidth={isMobile}
-                    className={classes.button}
-                  >
-                    {t('copyResult')}
-                  </Button>
-                </CopyToClipboard>
-              )
-            }
-            {
-              !isEmpty(resultState) && (
-                <Button
-                  startIcon={<CloseIcon />}
-                  variant="outlined"
-                  onClick={clearResults}
-                  fullWidth={isMobile}
-                  className={classes.button}
-                >
-                  {t('clear')}
-                </Button>
-              )
-            }
-          </Grid>
-        </Grid>
+        <Form
+          openSnackbar={openSnackbar}
+          textToCopy={textToCopy}
+        />
 
         {
           (formState.withRating && !isEmpty(membersToRatingState)) && (
@@ -214,6 +188,8 @@ const Home = (props: HomeProps) => {
                   ))
                 }
               </Grid>
+              <br />
+              <br />
             </>
           )
         }
@@ -221,10 +197,11 @@ const Home = (props: HomeProps) => {
 
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={5000}
+        autoHideDuration={snackbar.autoHideDuration ?? 5000}
         onClose={closeSnackbar}
+        action={snackbarAction}
       >
-        <Alert severity={snackbar.type} sx={{ width: '100%' }}>
+        <Alert onClose={closeSnackbar} severity={snackbar.type} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>
@@ -239,7 +216,7 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
     props: {
       messages: pick(
         await import(`../locales/${locale}.json`),
-        ['home']
+        ['home', 'generic']
       )
     }
   };

@@ -64,7 +64,12 @@ export default function RatingCard() {
 
   const formState = useRecoilValue(formAtom)
   const [membersToRatingState, setMembersToRatingState] = useRecoilState(membersToRatingAtom)
-  const [, setResultState] = useRecoilState(resultAtom)
+  const [res, setResultState] = useRecoilState(resultAtom)
+
+  console.warn({
+    membersToRatingState,
+    res
+  })
 
   /**
    * Função que altera a pontuação do jogador

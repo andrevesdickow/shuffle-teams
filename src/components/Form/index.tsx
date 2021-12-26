@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import { isEmpty, isNumber, toNumber } from 'lodash'
 import { useRecoilState } from 'recoil'
 import { useTranslations } from 'use-intl'
 
 import {
+  Button,
   FormControlLabel,
   Grid,
   Switch,
@@ -15,6 +17,8 @@ import {
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { LoadingButton } from '@mui/lab'
 import {
+  Close as CloseIcon,
+  ContentCopy as CopyIcon,
   Shuffle as ShuffleIcon,
   Star as StarIcon
 } from '@mui/icons-material'
@@ -46,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }))
 
-export default function Form({ openSnackbar }: FormProps) {
+export default function Form({ openSnackbar, textToCopy }: FormProps) {
   const t = useTranslations('home')
   const classes = useStyles()
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
@@ -54,7 +58,7 @@ export default function Form({ openSnackbar }: FormProps) {
   const [loading, setLoading] = useState(false)
   const [formState, setFormState] = useRecoilState<IFormData>(formAtom)
   const [, setMembersToRatingState] = useRecoilState<IntegrantType[]>(membersToRatingAtom)
-  const [, setResultState] = useRecoilState<SeparatedTeamsType>(resultAtom)
+  const [resultState, setResultState] = useRecoilState<SeparatedTeamsType>(resultAtom)
 
   const { control, handleSubmit, watch } = useForm<IFormData>({
     defaultValues: {
@@ -64,9 +68,7 @@ export default function Form({ openSnackbar }: FormProps) {
     }
   })
 
-  const onSubmit: SubmitHandler<IFormData> = data => {
-    setFormState(data)
-
+  const handleShuffle: SubmitHandler<IFormData> = data => {
     if (isEmpty(data.members)) {
       openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
       return
@@ -81,6 +83,8 @@ export default function Form({ openSnackbar }: FormProps) {
 
     setLoading(true)
 
+    setFormState(data)
+
     const separatedTeams = shuffleTeams(data.members, teams)
     setResultState(separatedTeams)
 
@@ -91,25 +95,39 @@ export default function Form({ openSnackbar }: FormProps) {
    * Função executada ao clicar em "Adicionar pontuação"
    * @returns `void`
    */
-  function handleRating(): void {
-    if (isEmpty(formState.members)) {
+  const handleRating: SubmitHandler<IFormData> = data => {
+    if (isEmpty(data.members)) {
       openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
       return
     }
 
-    const teams = toNumber(formState.numberOfTeams)
+    const teams = toNumber(data.numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
       openSnackbar({ type: 'error', message: t('informTeamQuantity'), open: true })
       return
     }
 
-    const separatedMembers = organizeMembersToRating(formState.members)
+    setFormState(data)
+
+    const separatedMembers = organizeMembersToRating(data.members)
     setMembersToRatingState(separatedMembers)
   }
 
+  /**
+   * Função que limpa os resultados
+   */
+  function clearResults() {
+    setFormState({
+      ...formState,
+      members: ''
+    })
+    setResultState({})
+    setMembersToRatingState([])
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(!watch('withRating') ? handleShuffle : handleRating)}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Controller
@@ -168,9 +186,9 @@ export default function Form({ openSnackbar }: FormProps) {
                   loadingPosition="start"
                   startIcon={<StarIcon />}
                   variant="outlined"
-                  onClick={handleRating}
                   fullWidth={isMobile}
                   className={classes.button}
+                  type="submit"
                 >
                   {t('addScore')}
                 </LoadingButton>
@@ -188,6 +206,42 @@ export default function Form({ openSnackbar }: FormProps) {
                   {t('shuffle')}
                 </LoadingButton>
               )
+          }
+          {
+            !isEmpty(resultState) && (
+              <Button
+                startIcon={<CloseIcon />}
+                variant="outlined"
+                onClick={clearResults}
+                fullWidth={isMobile}
+                className={classes.button}
+              >
+                {t('clear')}
+              </Button>
+            )
+          }
+          {
+            (!isEmpty(textToCopy)) && (
+              <CopyToClipboard
+                text={textToCopy}
+                onCopy={() => openSnackbar({
+                  type: 'success',
+                  message: t('resultCopied'),
+                  open: true,
+                  autoHideDuration: 2000
+                })}
+              >
+                <Button
+                  startIcon={<CopyIcon />}
+                  variant="outlined"
+                  onClick={() => { }}
+                  fullWidth={isMobile}
+                  className={classes.button}
+                >
+                  {t('copyResult')}
+                </Button>
+              </CopyToClipboard>
+            )
           }
         </Grid>
       </Grid>

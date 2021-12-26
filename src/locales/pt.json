@@ -15,5 +15,9 @@
     "team": "Equipe",
     "informTeamMembers": "Informe os integrantes da equipe",
     "informTeamQuantity": "Informe a quantidade de equipes"
+  },
+  "generic": {
+    "portuguese": "Português",
+    "english": "Inglês"
   }
 }

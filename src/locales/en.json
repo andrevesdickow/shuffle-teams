@@ -15,5 +15,9 @@
     "team": "Team",
     "informTeamMembers": "Inform team members",
     "informTeamQuantity": "Enter the number of teams"
+  },
+  "generic": {
+    "portuguese": "Portuguese",
+    "english": "English"
   }
 }
