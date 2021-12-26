@@ -1,5 +1,5 @@
 import { isEmpty, join, last, map, replace, trimStart } from 'lodash'
-import { IntegrantType } from './shuffleTeams'
+import { IntegrantType } from '../interfaces/Teams'
 
 export default function generateTextToCopy(teams: IntegrantType[][]): string {
   if (isEmpty(teams)) {

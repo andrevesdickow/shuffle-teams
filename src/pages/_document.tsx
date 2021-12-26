@@ -1,6 +1,10 @@
 import * as React from 'react'
+
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script'
+
 import { ServerStyleSheets } from '@mui/styles'
+
 import theme from '../styles/light'
 
 export default class MyDocument extends Document {
@@ -14,6 +18,20 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+          {/* Global site tag (gtag.js) - Google Analytics */}
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-1V5GZZW149"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){window.dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-1V5GZZW149');
+            `}
+          </Script>
         </Head>
         <body>
           <Main />
