@@ -11,7 +11,6 @@ import {
   toString,
   trimStart,
 } from 'lodash'
-import { useRecoilValue } from 'recoil'
 import { useTranslations } from 'use-intl'
 
 import {
@@ -34,12 +33,10 @@ import {
 import { withStyles } from '@mui/styles'
 import { Close as CloseIcon } from '@mui/icons-material'
 
-import { formAtom } from '../atoms/formAtom'
-import { membersToRatingAtom } from '../atoms/membersToRatingAtom'
-import { resultAtom } from '../atoms/resultAtom'
 import Form from '../components/Form'
 import Header from '../components/Header'
 import RatingCard from '../components/RatingCard'
+import { useFormData } from '../contexts/FormDataContext'
 import generateTextToCopy from '../functions/generateTextToCopy'
 import { HomeProps } from '../interfaces/Home'
 import { SnackbarProps } from '../interfaces/Snackbar'
@@ -52,9 +49,7 @@ const Home = (props: HomeProps) => {
 
   const t = useTranslations('home')
 
-  const formState = useRecoilValue(formAtom)
-  const resultState = useRecoilValue(resultAtom)
-  const membersToRatingState = useRecoilValue(membersToRatingAtom)
+  const { controls, membersToRating, result } = useFormData()
 
   const [snackbar, setSnackbar] = useState<SnackbarProps>({
     open: false,
@@ -64,12 +59,12 @@ const Home = (props: HomeProps) => {
 
   const teams = useMemo(() => {
     const aux: IntegrantType[][] = []
-    mapValues(resultState, (teams: IntegrantType[]) => {
+    mapValues(result, (teams: IntegrantType[]) => {
       aux.push(teams)
     })
 
     return aux
-  }, [resultState])
+  }, [result])
 
   const textToCopy = useMemo(() => {
     return generateTextToCopy(teams)
@@ -90,31 +85,18 @@ const Home = (props: HomeProps) => {
   }
 
   const closeSnackbar = (
-    event: Event | SyntheticEvent<any, Event>,
+    _event: Event | SyntheticEvent<any, Event>,
     reason?: SnackbarCloseReason | undefined
   ): void => {
     if (reason === 'clickaway') {
       return
     }
 
-    event.preventDefault()
-
     setSnackbar(prevState => ({
       ...prevState,
       open: false
     }))
   }
-
-  const snackbarAction = (
-    <IconButton
-      size="small"
-      aria-label="close"
-      color="inherit"
-      onClick={closeSnackbar}
-    >
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  )
 
   return (
     <Box className={classes.main}>
@@ -145,13 +127,13 @@ const Home = (props: HomeProps) => {
         />
 
         {
-          (formState.withRating && !isEmpty(membersToRatingState)) && (
+          (controls.withRating && !isEmpty(membersToRating)) && (
             <RatingCard />
           )
         }
 
         {
-          !isEmpty(resultState) && (
+          !isEmpty(result) && (
             <>
               <br />
               <Grid container spacing={1}>
@@ -199,7 +181,16 @@ const Home = (props: HomeProps) => {
         open={snackbar.open}
         autoHideDuration={snackbar.autoHideDuration ?? 5000}
         onClose={closeSnackbar}
-        action={snackbarAction}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={closeSnackbar}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
       >
         <Alert onClose={closeSnackbar} severity={snackbar.type} sx={{ width: '100%' }}>
           {snackbar.message}

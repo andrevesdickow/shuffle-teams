@@ -3,7 +3,6 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import { isEmpty, isNumber, toNumber } from 'lodash'
-import { useRecoilState } from 'recoil'
 import { useTranslations } from 'use-intl'
 
 import {
@@ -24,12 +23,9 @@ import {
 } from '@mui/icons-material'
 import { makeStyles } from '@mui/styles'
 
-import { formAtom } from '../../atoms/formAtom'
-import { membersToRatingAtom } from '../../atoms/membersToRatingAtom'
-import { resultAtom } from '../../atoms/resultAtom'
+import { useFormData } from '../../contexts/FormDataContext'
 import { organizeMembersToRating, shuffleTeams } from '../../functions/shuffleTeams'
 import { FormProps, IFormData } from '../../interfaces/Forms'
-import { IntegrantType, SeparatedTeamsType } from '../../interfaces/Teams'
 
 const useStyles = makeStyles((theme: Theme) => ({
   button: {
@@ -56,9 +52,14 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   const [loading, setLoading] = useState(false)
-  const [formState, setFormState] = useRecoilState<IFormData>(formAtom)
-  const [, setMembersToRatingState] = useRecoilState<IntegrantType[]>(membersToRatingAtom)
-  const [resultState, setResultState] = useRecoilState<SeparatedTeamsType>(resultAtom)
+
+  const {
+    handleChangeControls,
+    handleChangeResult,
+    handleChangeMembersToRating,
+    resetFormData,
+    hasResult
+  } = useFormData()
 
   const { control, handleSubmit, watch } = useForm<IFormData>({
     defaultValues: {
@@ -68,6 +69,11 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
     }
   })
 
+  /**
+   * Função executada ao clicar em embaralhar
+   * @param data 
+   * @returns `void`
+   */
   const handleShuffle: SubmitHandler<IFormData> = data => {
     if (isEmpty(data.members)) {
       openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
@@ -83,10 +89,10 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
 
     setLoading(true)
 
-    setFormState(data)
+    handleChangeControls(data)
 
     const separatedTeams = shuffleTeams(data.members, teams)
-    setResultState(separatedTeams)
+    handleChangeResult(separatedTeams)
 
     setLoading(false)
   }
@@ -108,22 +114,17 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
       return
     }
 
-    setFormState(data)
+    handleChangeControls(data)
 
     const separatedMembers = organizeMembersToRating(data.members)
-    setMembersToRatingState(separatedMembers)
+    handleChangeMembersToRating(separatedMembers)
   }
 
   /**
-   * Função que limpa os resultados
+   * Função que limpa os resultados e formulário
    */
   function clearResults() {
-    setFormState({
-      ...formState,
-      members: ''
-    })
-    setResultState({})
-    setMembersToRatingState([])
+    resetFormData()
   }
 
   return (
@@ -135,7 +136,19 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
             control={control}
             render={({ field }) => (
               <FormControlLabel
-                control={<Switch {...field} />}
+                control={
+                  <Switch
+                    {...field}
+                    onChange={(event, checked: boolean) => {
+                      field.onChange(event)
+
+                      if (!checked) {
+                        handleChangeMembersToRating([])
+                        handleChangeResult({})
+                      }
+                    }}
+                  />
+                }
                 label={t('withScore')}
               />
             )}
@@ -145,7 +158,7 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
           <Controller
             name="members"
             control={control}
-            rules={{ required: true }}
+            // rules={{ required: true }}
             render={({ field }) => (
               <TextField
                 label={t('members')}
@@ -162,7 +175,7 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
           <Controller
             name="numberOfTeams"
             control={control}
-            rules={{ required: true }}
+            // rules={{ required: true }}
             render={({ field }) => (
               <TextField
                 label={t('numberOfTeams')}
@@ -208,7 +221,7 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
               )
           }
           {
-            !isEmpty(resultState) && (
+            hasResult && (
               <Button
                 startIcon={<CloseIcon />}
                 variant="outlined"

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import { camelCase, cloneDeep, map, toNumber } from 'lodash'
-import { useRecoilState, useRecoilValue } from 'recoil'
 import { useTranslations } from 'use-intl'
 
 import {
@@ -19,9 +18,7 @@ import { Shuffle as ShuffleIcon } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
 import { makeStyles } from '@mui/styles'
 
-import { formAtom } from '../../atoms/formAtom'
-import { membersToRatingAtom } from '../../atoms/membersToRatingAtom'
-import { resultAtom } from '../../atoms/resultAtom'
+import { useFormData } from '../../contexts/FormDataContext'
 import { shuffleTeamsByRating } from '../../functions/shuffleTeams'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,14 +59,12 @@ export default function RatingCard() {
 
   const [loading, setLoading] = useState(false)
 
-  const formState = useRecoilValue(formAtom)
-  const [membersToRatingState, setMembersToRatingState] = useRecoilState(membersToRatingAtom)
-  const [res, setResultState] = useRecoilState(resultAtom)
-
-  console.warn({
-    membersToRatingState,
-    res
-  })
+  const {
+    controls,
+    handleChangeMembersToRating,
+    membersToRating,
+    handleChangeResult
+  } = useFormData()
 
   /**
    * Função que altera a pontuação do jogador
@@ -77,9 +72,9 @@ export default function RatingCard() {
    * @param index índice
    */
   function handleChangeIntegrantRating(rating: number | null, index: number) {
-    const clone = cloneDeep(membersToRatingState)
+    const clone = cloneDeep(membersToRating)
     clone[index].rating = rating
-    setMembersToRatingState(clone)
+    handleChangeMembersToRating(clone)
   }
 
   /**
@@ -89,9 +84,9 @@ export default function RatingCard() {
   function handleShuffleByRating(): void {
     setLoading(true)
 
-    const teams = toNumber(formState.numberOfTeams)
-    const separatedTeams = shuffleTeamsByRating(membersToRatingState, teams)
-    setResultState(separatedTeams)
+    const teams = toNumber(controls.numberOfTeams)
+    const separatedTeams = shuffleTeamsByRating(membersToRating, teams)
+    handleChangeResult(separatedTeams)
 
     setLoading(false)
   }
@@ -101,7 +96,7 @@ export default function RatingCard() {
       <CardHeader title={t('enterPlayerScores')} />
       <CardContent>
         {
-          map(membersToRatingState, (memberToRating, indexMemberToRating) => (
+          map(membersToRating, (memberToRating, indexMemberToRating) => (
             <Box key={memberToRating.name} className={classes.membersToRating}>
               <Rating
                 name={camelCase(memberToRating.name)}

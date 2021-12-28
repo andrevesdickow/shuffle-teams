@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 import { filter, map } from 'lodash'
 import { useTranslations } from 'next-intl'
@@ -24,7 +24,7 @@ import {
   Translate as TranslateIcon
 } from '@mui/icons-material'
 
-import AppContext from '../../contexts/AppContext'
+import { useConfig } from '../../contexts/ConfigContext'
 import { makeStyles } from '@mui/styles'
 
 const ITEM_HEIGHT = 48
@@ -45,7 +45,7 @@ export default function Header() {
   const { locales, locale: activeLocale } = router
   const otherLocales = filter(locales, (locale) => locale !== activeLocale)
 
-  const { toggleTheme, currentTheme } = useContext(AppContext)
+  const { toggleTheme, theme } = useConfig()
 
   const classes = useStyles()
 
@@ -79,9 +79,9 @@ export default function Header() {
             onClick={toggleTheme}
             color="inherit"
           >
-            <Tooltip title={t(currentTheme === 'light' ? 'darkMode' : 'lightMode')}>
+            <Tooltip title={t(theme === 'light' ? 'darkMode' : 'lightMode')}>
               {
-                currentTheme === 'light'
+                theme === 'light'
                   ? (<DarkModeIcon />)
                   : (<LightModeIcon />)
               }
