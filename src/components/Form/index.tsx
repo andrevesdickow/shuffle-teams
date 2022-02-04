@@ -33,7 +33,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 import { useFormData } from '../../contexts/FormDataContext'
 import { organizeMembersToRating, shuffleTeams } from '../../functions/shuffleTeams'
-import { FormProps, IFormData } from '../../interfaces/Forms'
+
+interface IFormData {
+  withRating: boolean;
+  members: string;
+  numberOfTeams: number;
+}
+
+type FormProps = {
+  textToCopy: string;
+}
 
 export default function Form({ textToCopy }: FormProps) {
   const t = useTranslations('home')

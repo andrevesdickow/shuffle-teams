@@ -2,8 +2,20 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 
 import { isEmpty } from 'lodash'
 
-import { IFormData } from '../interfaces/Forms'
-import { IntegrantType, SeparatedTeamsType } from '../interfaces/Teams'
+type IntegrantType = {
+  name: string;
+  rating: number | null;
+}
+
+type SeparatedTeamsType = {
+  [name: string]: IntegrantType[];
+}
+
+interface IFormData {
+  withRating: boolean;
+  members: string;
+  numberOfTeams: number;
+}
 
 interface IFormDataContextProps {
   controls: IFormData;
@@ -22,7 +34,7 @@ interface IFormDataProviderProps {
 
 const defaultControls: IFormData = {
   members: '',
-  numberOfTeams: '2',
+  numberOfTeams: 2,
   withRating: false
 }
 

@@ -32,7 +32,11 @@ import Header from '../components/Header'
 import RatingCard from '../components/RatingCard'
 import { useFormData } from '../contexts/FormDataContext'
 import generateTextToCopy from '../functions/generateTextToCopy'
-import { IntegrantType } from '../interfaces/Teams'
+
+type IntegrantType = {
+  name: string;
+  rating: number | null;
+}
 
 export default function Home() {
   const t = useTranslations('home')
