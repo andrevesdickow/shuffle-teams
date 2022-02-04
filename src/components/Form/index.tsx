@@ -1,57 +1,56 @@
-import { useState } from 'react'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+import {
+  MdClose as CloseIcon,
+  MdContentCopy as CopyIcon,
+  MdShuffle as ShuffleIcon,
+  MdStar as StarIcon
+} from 'react-icons/md'
 
 import { isEmpty, isNumber, toNumber } from 'lodash'
 import { useTranslations } from 'use-intl'
 
 import {
+  Box,
   Button,
-  FormControlLabel,
-  Grid,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Icon,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Switch,
-  TextField,
-  Theme
-} from '@mui/material'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { LoadingButton } from '@mui/lab'
-import {
-  Close as CloseIcon,
-  ContentCopy as CopyIcon,
-  Shuffle as ShuffleIcon,
-  Star as StarIcon
-} from '@mui/icons-material'
-import { makeStyles } from '@mui/styles'
+  VStack,
+  Textarea,
+  useToast,
+  useBreakpointValue
+} from '@chakra-ui/react'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { useFormData } from '../../contexts/FormDataContext'
 import { organizeMembersToRating, shuffleTeams } from '../../functions/shuffleTeams'
-import { FormProps, IFormData } from '../../interfaces/Forms'
 
-const useStyles = makeStyles((theme: Theme) => ({
-  button: {
-    [theme.breakpoints.up('sm')]: {
-      marginRight: theme.spacing(1),
+interface IFormData {
+  withRating: boolean;
+  members: string;
+  numberOfTeams: number;
+}
 
-      '& > :first-child': {
-        marginRight: 0
-      }
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
+type FormProps = {
+  textToCopy: string;
+}
 
-      '& > :nth-child(1)': {
-        marginTop: 0
-      }
-    }
-  }
-}))
-
-export default function Form({ openSnackbar, textToCopy }: FormProps) {
+export default function Form({ textToCopy }: FormProps) {
   const t = useTranslations('home')
-  const classes = useStyles()
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
-
-  const [loading, setLoading] = useState(false)
+  const toast = useToast()
+  const isMobile = useBreakpointValue({
+    base: true,
+    sm: false
+  })
 
   const {
     handleChangeControls,
@@ -61,40 +60,55 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
     hasResult
   } = useFormData()
 
-  const { control, handleSubmit, watch } = useForm<IFormData>({
+  const { register, handleSubmit, formState, watch } = useForm<IFormData>({
+    resolver: yupResolver(yup.object().shape({
+      withRating: yup.bool(),
+      members: yup.string().required(t('informTeamMembers')),
+      numberOfTeams: yup.number().required(t('informTeamQuantity')).min(2, t('minTeamQuantity'))
+    })),
     defaultValues: {
       withRating: false,
       members: '',
-      numberOfTeams: '2'
+      numberOfTeams: 2
     }
   })
+
+  const { isSubmitting, errors } = formState
 
   /**
    * Função executada ao clicar em embaralhar
    * @param data 
    * @returns `void`
    */
-  const handleShuffle: SubmitHandler<IFormData> = data => {
+  const handleShuffle: SubmitHandler<IFormData> = async data => {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     if (isEmpty(data.members)) {
-      openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
+      toast({
+        description: t('informTeamMembers'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
 
     const teams = toNumber(data.numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
-      openSnackbar({ type: 'error', message: t('informTeamQuantity'), open: true })
+      toast({
+        description: t('informTeamQuantity'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
-
-    setLoading(true)
 
     handleChangeControls(data)
 
     const separatedTeams = shuffleTeams(data.members, teams)
     handleChangeResult(separatedTeams)
-
-    setLoading(false)
   }
 
   /**
@@ -103,14 +117,24 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
    */
   const handleRating: SubmitHandler<IFormData> = data => {
     if (isEmpty(data.members)) {
-      openSnackbar({ type: 'error', message: t('informTeamMembers'), open: true })
+      toast({
+        description: t('informTeamMembers'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
 
     const teams = toNumber(data.numberOfTeams)
 
     if (!isNumber(teams) || teams <= 0) {
-      openSnackbar({ type: 'error', message: t('informTeamQuantity'), open: true })
+      toast({
+        description: t('informTeamQuantity'),
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
 
@@ -128,106 +152,97 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(!watch('withRating') ? handleShuffle : handleRating)}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Controller
-            name="withRating"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...field}
-                    onChange={(event, checked: boolean) => {
-                      field.onChange(event)
-
-                      if (!checked) {
-                        handleChangeMembersToRating([])
-                        handleChangeResult({})
-                      }
-                    }}
-                  />
-                }
-                label={t('withScore')}
+    <Box
+      as="form"
+      flex="1"
+      onSubmit={handleSubmit(!watch('withRating') ? handleShuffle : handleRating)}
+    >
+      <VStack align="flex-start" spacing="8">
+        <Box w="100%" mt="8">
+          <FormControl display="flex" mb="2">
+            <Switch
+              id="withRating"
+              colorScheme="teal"
+              {...register('withRating')}
+            />
+            <FormLabel htmlFor="withRating" mb="0" ml="2">
+              {t('withScore')}
+            </FormLabel>
+          </FormControl>
+          <FormControl mb="2" isInvalid={!!errors.members}>
+            <Textarea
+              id="members"
+              placeholder={t('members')}
+              resize="none"
+              w="100%"
+              focusBorderColor="teal.500"
+              {...register('members')}
+            />
+            {!!errors.members && <FormErrorMessage>{errors.members.message}</FormErrorMessage>}
+          </FormControl>
+          <FormControl mb="2" isInvalid={!!errors.numberOfTeams}>
+            <NumberInput
+              id="numberOfTeams"
+              name="numberOfTeams"
+              placeholder={t('numberOfTeams')}
+              defaultValue={2}
+              min={1}
+              max={20}
+              focusBorderColor="teal.500"
+            >
+              <NumberInputField
+                {...register('numberOfTeams')}
               />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="members"
-            control={control}
-            // rules={{ required: true }}
-            render={({ field }) => (
-              <TextField
-                label={t('members')}
-                multiline
-                rows={4}
-                fullWidth
-                size="small"
-                {...field}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="numberOfTeams"
-            control={control}
-            // rules={{ required: true }}
-            render={({ field }) => (
-              <TextField
-                label={t('numberOfTeams')}
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                fullWidth
-                size="small"
-                {...field}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12}>
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            {!!errors.numberOfTeams && <FormErrorMessage>{errors.numberOfTeams.message}</FormErrorMessage>}
+          </FormControl>
+        </Box>
+        <Box w="100%" mt="8">
           {
             watch('withRating')
               ? (
-                <LoadingButton
-                  loading={loading}
-                  loadingPosition="start"
-                  startIcon={<StarIcon />}
-                  variant="outlined"
-                  fullWidth={isMobile}
-                  className={classes.button}
+                <Button
+                  colorScheme="teal"
+                  isLoading={isSubmitting}
+                  leftIcon={<Icon as={StarIcon} />}
+                  variant="outline"
                   type="submit"
+                  isFullWidth={isMobile}
+                  mr="4"
+                  mb="4"
                 >
                   {t('addScore')}
-                </LoadingButton>
+                </Button>
               )
               : (
-                <LoadingButton
-                  loading={loading}
-                  loadingPosition="start"
-                  startIcon={<ShuffleIcon />}
-                  variant="outlined"
-                  fullWidth={isMobile}
-                  className={classes.button}
+                <Button
+                  colorScheme="teal"
+                  isLoading={isSubmitting}
+                  leftIcon={<Icon as={ShuffleIcon} />}
+                  variant="outline"
                   type="submit"
+                  isFullWidth={isMobile}
+                  mr="4"
+                  mb="4"
                 >
                   {t('shuffle')}
-                </LoadingButton>
+                </Button>
               )
           }
           {
             hasResult && (
               <Button
-                startIcon={<CloseIcon />}
-                variant="outlined"
+                colorScheme="teal"
+                leftIcon={<Icon as={CloseIcon} />}
+                variant="outline"
                 onClick={clearResults}
-                fullWidth={isMobile}
-                className={classes.button}
+                isFullWidth={isMobile}
+                mr="4"
+                mb="4"
               >
                 {t('clear')}
               </Button>
@@ -237,27 +252,28 @@ export default function Form({ openSnackbar, textToCopy }: FormProps) {
             (!isEmpty(textToCopy)) && (
               <CopyToClipboard
                 text={textToCopy}
-                onCopy={() => openSnackbar({
-                  type: 'success',
-                  message: t('resultCopied'),
-                  open: true,
-                  autoHideDuration: 2000
+                onCopy={() => toast({
+                  description: t('resultCopied'),
+                  status: 'success',
+                  duration: 2000
                 })}
               >
                 <Button
-                  startIcon={<CopyIcon />}
-                  variant="outlined"
+                  colorScheme="teal"
+                  leftIcon={<Icon as={CopyIcon} />}
+                  variant="outline"
                   onClick={() => { }}
-                  fullWidth={isMobile}
-                  className={classes.button}
+                  isFullWidth={isMobile}
+                  mr="4"
+                  mb="4"
                 >
                   {t('copyResult')}
                 </Button>
               </CopyToClipboard>
             )
           }
-        </Grid>
-      </Grid>
-    </form>
+        </Box>
+      </VStack>
+    </Box>
   )
 }

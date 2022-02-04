@@ -1,11 +1,9 @@
 import * as React from 'react'
 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
-import Script from 'next/script'
-
-import { ServerStyleSheets } from '@mui/styles'
-
-import theme from '../styles/light'
+import { ColorModeScript } from '@chakra-ui/react'
+import { theme } from '../styles/theme'
+// import Script from 'next/script'
 
 export default class MyDocument extends Document {
   render() {
@@ -13,13 +11,14 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           {/* PWA primary color */}
-          <meta name="theme-color" content={theme.palette.primary.main} />
+          <meta name="theme-color" content="#008c80" />
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
           {/* Global site tag (gtag.js) - Google Analytics */}
-          <Script
+          {/* <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_ANALYTICS_ID}`}
             strategy="afterInteractive"
           />
@@ -31,7 +30,7 @@ export default class MyDocument extends Document {
 
               gtag('config', '${process.env.NEXT_PUBLIC_ANALYTICS_ID}');
             `}
-          </Script>
+          </Script> */}
         </Head>
         <body>
           <Main />
@@ -67,21 +66,9 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  // Render app and page and get the context of the page with collected side effects.
-  const sheets = new ServerStyleSheets()
-  const originalRenderPage = ctx.renderPage
-
-  ctx.renderPage = () =>
-    originalRenderPage({
-      // eslint-disable-next-line react/display-name
-      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
-    })
-
   const initialProps = await Document.getInitialProps(ctx)
 
   return {
-    ...initialProps,
-    // Styles fragment is rendered after the app and page rendering finish.
-    styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
+    ...initialProps
   }
 }

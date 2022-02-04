@@ -1,61 +1,21 @@
 import { useState } from 'react'
+import { MdShuffle as ShuffleIcon } from 'react-icons/md'
+import ReactStars from 'react-stars'
 
-import { camelCase, cloneDeep, map, toNumber } from 'lodash'
+import { cloneDeep, map, toNumber } from 'lodash'
 import { useTranslations } from 'use-intl'
 
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Rating,
-  Theme,
-  Typography
-} from '@mui/material'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Shuffle as ShuffleIcon } from '@mui/icons-material'
-import { LoadingButton } from '@mui/lab'
-import { makeStyles } from '@mui/styles'
+import { Box, Button, Flex, Heading, Icon, Text, useBreakpointValue } from '@chakra-ui/react'
 
 import { useFormData } from '../../contexts/FormDataContext'
 import { shuffleTeamsByRating } from '../../functions/shuffleTeams'
 
-const useStyles = makeStyles((theme: Theme) => ({
-  cardMembersToRating: {
-    marginTop: theme.spacing(2),
-  },
-  membersToRating: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& legend': {
-      marginLeft: theme.spacing(1)
-    }
-  },
-
-  button: {
-    [theme.breakpoints.up('sm')]: {
-      marginRight: theme.spacing(1),
-
-      '& > :first-child': {
-        marginRight: 0
-      }
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginTop: theme.spacing(1),
-
-      '& > :nth-child(1)': {
-        marginTop: 0
-      }
-    }
-  },
-}))
-
 export default function RatingCard() {
   const t = useTranslations('home')
-  const classes = useStyles()
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+  const isMobile = useBreakpointValue({
+    base: true,
+    sm: false
+  })
 
   const [loading, setLoading] = useState(false)
 
@@ -81,8 +41,9 @@ export default function RatingCard() {
    * Função executada ao clicar em "Sortear"
    * @returns `void`
    */
-  function handleShuffleByRating(): void {
+  async function handleShuffleByRating() {
     setLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     const teams = toNumber(controls.numberOfTeams)
     const separatedTeams = shuffleTeamsByRating(membersToRating, teams)
@@ -92,38 +53,38 @@ export default function RatingCard() {
   }
 
   return (
-    <Card className={classes.cardMembersToRating}>
-      <CardHeader title={t('enterPlayerScores')} />
-      <CardContent>
+    <Box p="4" mt="4" border="1px" borderColor="gray.100" borderRadius="8">
+      <Heading size="sm">{t('enterPlayerScores')}</Heading>
+      <Box>
         {
           map(membersToRating, (memberToRating, indexMemberToRating) => (
-            <Box key={memberToRating.name} className={classes.membersToRating}>
-              <Rating
-                name={camelCase(memberToRating.name)}
-                value={memberToRating.rating}
-                onChange={(_event: React.SyntheticEvent<Element, Event>, newValue: number | null) => {
-                  handleChangeIntegrantRating(newValue, indexMemberToRating)
+            <Flex key={memberToRating.name} direction="row">
+              <ReactStars
+                count={5}
+                half={false}
+                value={toNumber(memberToRating.rating)}
+                onChange={(newRating: number) => {
+                  handleChangeIntegrantRating(newRating, indexMemberToRating)
                 }}
-                size={isMobile ? 'large' : 'medium'}
+                size={isMobile ? 24 : 16}
               />
-              <Typography component="legend">{memberToRating.name}</Typography>
-            </Box>
+              <Text as="legend">{memberToRating.name}</Text>
+            </Flex>
           ))
         }
-      </CardContent>
-      <CardActions>
-        <LoadingButton
-          loading={loading}
-          loadingPosition="start"
-          startIcon={<ShuffleIcon />}
-          variant="outlined"
+      </Box>
+      <Box mt="4">
+        <Button
+          colorScheme="teal"
+          isLoading={loading}
+          leftIcon={<Icon as={ShuffleIcon} />}
+          variant="outline"
           onClick={handleShuffleByRating}
-          fullWidth={isMobile}
-          className={classes.button}
+          isFullWidth={isMobile}
         >
           {t('shuffle')}
-        </LoadingButton>
-      </CardActions>
-    </Card>
+        </Button>
+      </Box>
+    </Box>
   )
 }

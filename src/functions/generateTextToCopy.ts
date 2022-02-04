@@ -1,5 +1,9 @@
 import { isEmpty, join, last, map, replace, trimStart } from 'lodash'
-import { IntegrantType } from '../interfaces/Teams'
+
+type IntegrantType = {
+  name: string;
+  rating: number | null;
+}
 
 export default function generateTextToCopy(teams: IntegrantType[][]): string {
   if (isEmpty(teams)) {
