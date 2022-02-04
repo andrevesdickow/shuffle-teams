@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { MdShuffle as ShuffleIcon } from 'react-icons/md'
 
 import { camelCase, cloneDeep, map, toNumber } from 'lodash'
 import { useTranslations } from 'use-intl'
@@ -14,8 +15,7 @@ import {
   Typography
 } from '@mui/material'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Shuffle as ShuffleIcon } from '@mui/icons-material'
-import { LoadingButton } from '@mui/lab'
+import { Button, Icon } from '@chakra-ui/react'
 import { makeStyles } from '@mui/styles'
 
 import { useFormData } from '../../contexts/FormDataContext'
@@ -112,17 +112,15 @@ export default function RatingCard() {
         }
       </CardContent>
       <CardActions>
-        <LoadingButton
-          loading={loading}
-          loadingPosition="start"
-          startIcon={<ShuffleIcon />}
-          variant="outlined"
+        <Button
+          isLoading={loading}
+          startIcon={<Icon as={ShuffleIcon} />}
+          variant="outline"
           onClick={handleShuffleByRating}
-          fullWidth={isMobile}
-          className={classes.button}
+          isFullWidth={isMobile}
         >
           {t('shuffle')}
-        </LoadingButton>
+        </Button>
       </CardActions>
     </Card>
   )

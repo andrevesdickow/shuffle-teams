@@ -1,26 +1,50 @@
-import { createTheme } from '@mui/material/styles'
-import { red } from '@mui/material/colors'
+import { extendTheme } from '@chakra-ui/react'
 
 // Create a theme instance.
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#0070f3',
-    },
-    secondary: {
-      main: '#19857b',
-    },
-    error: {
-      main: red.A400,
-    },
+export const theme = extendTheme({
+  config: {
+    initialColorMode: 'light',
+    useSystemColorMode: true
   },
-  components: {
-    MuiAppBar: {
-      defaultProps: {
-        enableColorOnDark: true,
+  // colors: {
+  //   gray: {
+  //     "900": "#181B23",
+  //     "800": "#1F2029",
+  //     "700": "#353646",
+  //     "600": "#4B4D63",
+  //     "500": "#616480",
+  //     "400": "#797D9A",
+  //     "300": "#9699B0",
+  //     "200": "#B3B5C6",
+  //     "100": "#D1D2DC",
+  //     "50": "#EEEEF2",
+  //   }
+  // },
+  fonts: {
+    heading: 'Roboto',
+    body: 'Roboto'
+  },
+  styles: {
+    global: {
+      // body: {
+      //   bg: 'gray.900',
+      //   color: 'gray.50'
+      // },
+      '::-webkit-scrollbar': {
+        width: 5,
+        height: 5
       },
-    },
-  },
-})
+      '::-webkit-scrollbar-thumb': {
+        background: '#008c80'
+      },
+      '::-webkit-scrollbar-track': {
+        background: '#01312c'
+      },
 
-export default theme
+      '::selection': {
+        color: '#ffffff',
+        backgroundColor: '#008c80',
+      }
+    }
+  }
+})

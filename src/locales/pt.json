@@ -14,7 +14,8 @@
     "teamResults": "Resultado das equipes",
     "team": "Equipe",
     "informTeamMembers": "Informe os integrantes da equipe",
-    "informTeamQuantity": "Informe a quantidade de equipes"
+    "informTeamQuantity": "Informe a quantidade de equipes",
+    "minTeamQuantity": "Nº de Equipes precisa ser maior ou igual a 2"
   },
   "generic": {
     "pt": "Português",

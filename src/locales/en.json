@@ -14,7 +14,8 @@
     "teamResults": "Team results",
     "team": "Team",
     "informTeamMembers": "Inform team members",
-    "informTeamQuantity": "Enter the number of teams"
+    "informTeamQuantity": "Enter the number of teams",
+    "minTeamQuantity": "Number of Teams must be greater than or equal to 2"
   },
   "generic": {
     "pt": "Portuguese",
