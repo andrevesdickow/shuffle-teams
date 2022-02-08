@@ -58,7 +58,7 @@ export default function RatingCard() {
       <Box>
         {
           map(membersToRating, (memberToRating, indexMemberToRating) => (
-            <Flex key={memberToRating.name} direction="row">
+            <Flex key={memberToRating.name} direction="row" align="center">
               <ReactStars
                 count={5}
                 half={false}
@@ -68,7 +68,7 @@ export default function RatingCard() {
                 }}
                 size={isMobile ? 24 : 16}
               />
-              <Text as="legend">{memberToRating.name}</Text>
+              <Text as="legend" ml={["2", "4"]}>{memberToRating.name}</Text>
             </Flex>
           ))
         }

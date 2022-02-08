@@ -1,41 +1,29 @@
 import { extendTheme } from '@chakra-ui/react'
+import { isEmpty } from 'lodash'
+import { parseCookies } from 'nookies'
 
-// Create a theme instance.
+const cookies = parseCookies()
+const initialColorMode = !isEmpty(cookies['chakra-ui-color-mode'])
+  ? cookies['chakra-ui-color-mode']
+  : 'light'
+
 export const theme = extendTheme({
   config: {
-    initialColorMode: 'light',
-    useSystemColorMode: true
+    initialColorMode,
+    // useSystemColorMode: true
   },
-  // colors: {
-  //   gray: {
-  //     "900": "#181B23",
-  //     "800": "#1F2029",
-  //     "700": "#353646",
-  //     "600": "#4B4D63",
-  //     "500": "#616480",
-  //     "400": "#797D9A",
-  //     "300": "#9699B0",
-  //     "200": "#B3B5C6",
-  //     "100": "#D1D2DC",
-  //     "50": "#EEEEF2",
-  //   }
-  // },
   fonts: {
     heading: 'Roboto',
     body: 'Roboto'
   },
   styles: {
     global: {
-      // body: {
-      //   bg: 'gray.900',
-      //   color: 'gray.50'
-      // },
       '::-webkit-scrollbar': {
         width: '5px',
         height: '5px'
       },
       '::-webkit-scrollbar-thumb': {
-        background: '#008c80'
+        background: '#319795'
       },
       '::-webkit-scrollbar-track': {
         background: '#01312c'
@@ -43,7 +31,7 @@ export const theme = extendTheme({
 
       '::selection': {
         color: '#ffffff',
-        backgroundColor: '#008c80',
+        backgroundColor: '#319795',
       }
     }
   }
