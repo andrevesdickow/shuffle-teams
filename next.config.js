@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   i18n: {
@@ -9,3 +10,5 @@ module.exports = {
     domains: ['flagcdn.com'],
   },
 }
+
+module.exports = nextConfig
