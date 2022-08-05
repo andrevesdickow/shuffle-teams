@@ -80,7 +80,7 @@ export default function RatingCard() {
           leftIcon={<Icon as={ShuffleIcon} />}
           variant="outline"
           onClick={handleShuffleByRating}
-          isFullWidth={isMobile}
+          width={isMobile ? 'full' : 'intrinsic'}
         >
           {t('shuffle')}
         </Button>

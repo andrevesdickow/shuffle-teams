@@ -211,7 +211,7 @@ export default function Form({ textToCopy }: FormProps) {
                   leftIcon={<Icon as={StarIcon} />}
                   variant="outline"
                   type="submit"
-                  isFullWidth={isMobile}
+                  width={isMobile ? 'full' : 'intrinsic'}
                   mr="4"
                   mb="4"
                 >
@@ -225,7 +225,7 @@ export default function Form({ textToCopy }: FormProps) {
                   leftIcon={<Icon as={ShuffleIcon} />}
                   variant="outline"
                   type="submit"
-                  isFullWidth={isMobile}
+                  width={isMobile ? 'full' : 'intrinsic'}
                   mr="4"
                   mb="4"
                 >
@@ -240,7 +240,7 @@ export default function Form({ textToCopy }: FormProps) {
                 leftIcon={<Icon as={CloseIcon} />}
                 variant="outline"
                 onClick={clearResults}
-                isFullWidth={isMobile}
+                width={isMobile ? 'full' : 'intrinsic'}
                 mr="4"
                 mb="4"
               >
@@ -263,7 +263,7 @@ export default function Form({ textToCopy }: FormProps) {
                   leftIcon={<Icon as={CopyIcon} />}
                   variant="outline"
                   onClick={() => { }}
-                  isFullWidth={isMobile}
+                  width={isMobile ? 'full' : 'intrinsic'}
                   mr="4"
                   mb="4"
                 >

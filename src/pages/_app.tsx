@@ -5,12 +5,13 @@ import { get } from 'lodash'
 
 import {
   ChakraProvider,
-  cookieStorageManager,
-  localStorageManager,
+  createLocalStorageManager
 } from '@chakra-ui/react'
 
 import { FormDataProvider } from '../contexts/FormDataContext'
 import { theme } from '../styles/theme'
+
+const manager = createLocalStorageManager('sortcheador_color_mode')
 
 interface MyAppProps extends AppProps {
   cookies?: string;
@@ -20,11 +21,7 @@ export default function MyApp({ Component, pageProps, cookies }: MyAppProps) {
     <NextIntlProvider messages={pageProps.messages}>
       <ChakraProvider
         theme={theme}
-        colorModeManager={
-          typeof cookies === 'string'
-            ? cookieStorageManager(cookies)
-            : localStorageManager
-        }
+        colorModeManager={manager}
       >
         <FormDataProvider>
           <Component {...pageProps} />
