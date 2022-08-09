@@ -1,8 +1,5 @@
-import { GetStaticPropsContext } from 'next'
+import { useMemo } from 'react';
 
-import { useMemo } from 'react'
-
-import Head from 'next/head'
 import {
   isEmpty,
   map,
@@ -10,8 +7,10 @@ import {
   pick,
   toString,
   trimStart,
-} from 'lodash'
-import { useTranslations } from 'use-intl'
+} from 'lodash';
+import { GetStaticPropsContext } from 'next';
+import Head from 'next/head';
+import { useTranslations } from 'use-intl';
 
 import {
   Box,
@@ -25,13 +24,13 @@ import {
   Tbody,
   Td,
   Text
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 
-import Form from '../components/Form'
-import Header from '../components/Header'
-import RatingCard from '../components/RatingCard'
-import { useFormData } from '../contexts/FormDataContext'
-import generateTextToCopy from '../functions/generateTextToCopy'
+import Form from '../components/Form';
+import Header from '../components/Header';
+import RatingCard from '../components/RatingCard';
+import { useFormData } from '../contexts/FormDataContext';
+import generateTextToCopy from '../functions/generateTextToCopy';
 
 type IntegrantType = {
   name: string;
@@ -39,22 +38,22 @@ type IntegrantType = {
 }
 
 export default function Home() {
-  const t = useTranslations('home')
+  const t = useTranslations('home');
 
-  const { controls, membersToRating, result } = useFormData()
+  const { controls, membersToRating, result } = useFormData();
 
   const teams = useMemo(() => {
-    const aux: IntegrantType[][] = []
+    const aux: IntegrantType[][] = [];
     mapValues(result, (teams: IntegrantType[]) => {
-      aux.push(teams)
-    })
+      aux.push(teams);
+    });
 
-    return aux
-  }, [result])
+    return aux;
+  }, [result]);
 
   const textToCopy = useMemo(() => {
-    return generateTextToCopy(teams)
-  }, [teams])
+    return generateTextToCopy(teams);
+  }, [teams]);
 
   return (
     <Box height="auto" minH="100vh">
@@ -117,7 +116,7 @@ export default function Home() {
         }
       </Container>
     </Box>
-  )
+  );
 }
 
 export async function getStaticProps({ locale }: GetStaticPropsContext) {

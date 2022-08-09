@@ -2,23 +2,22 @@ import {
   MdDarkMode as DarkModeIcon,
   MdLightMode as LightModeIcon,
   MdTranslate as TranslateIcon
-} from 'react-icons/md'
+} from 'react-icons/md';
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { filter, map } from 'lodash';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-import { filter, map } from 'lodash'
-import { useTranslations } from 'next-intl'
-
-import { Box, Flex, Heading, Icon, IconButton, Menu, MenuButton, MenuList, MenuItem, Tooltip, useColorMode } from '@chakra-ui/react'
+import { Box, Flex, Heading, Icon, IconButton, Menu, MenuButton, MenuList, MenuItem, Tooltip, useColorMode } from '@chakra-ui/react';
 
 export default function Header() {
-  const t = useTranslations('generic')
-  const { colorMode, toggleColorMode } = useColorMode()
-  const router = useRouter()
-  const { locales, locale: activeLocale } = router
-  const otherLocales = filter(locales, (locale) => locale !== activeLocale)
+  const t = useTranslations('generic');
+  const { colorMode, toggleColorMode } = useColorMode();
+  const router = useRouter();
+  const { locales, locale: activeLocale } = router;
+  const otherLocales = filter(locales, (locale) => locale !== activeLocale);
 
   return (
     <Flex
@@ -61,8 +60,8 @@ export default function Header() {
           <MenuList>
             {
               map(otherLocales, (locale) => {
-                const { pathname, query, asPath } = router
-                const img = locale === 'pt' ? 'br' : 'us'
+                const { pathname, query, asPath } = router;
+                const img = locale === 'pt' ? 'br' : 'us';
 
                 return (
                   <Link
@@ -83,12 +82,12 @@ export default function Header() {
                       &nbsp;{t(locale)}
                     </MenuItem>
                   </Link>
-                )
+                );
               })
             }
           </MenuList>
         </Menu>
       </Box>
     </Flex>
-  )
+  );
 }

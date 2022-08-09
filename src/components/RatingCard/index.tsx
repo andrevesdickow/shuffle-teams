@@ -1,30 +1,30 @@
-import { useState } from 'react'
-import { MdShuffle as ShuffleIcon } from 'react-icons/md'
-import ReactStars from 'react-stars'
+import { useState } from 'react';
+import { MdShuffle as ShuffleIcon } from 'react-icons/md';
+import ReactStars from 'react-stars';
 
-import { cloneDeep, map, toNumber } from 'lodash'
-import { useTranslations } from 'use-intl'
+import { cloneDeep, map, toNumber } from 'lodash';
+import { useTranslations } from 'use-intl';
 
-import { Box, Button, Flex, Heading, Icon, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Icon, Text, useBreakpointValue } from '@chakra-ui/react';
 
-import { useFormData } from '../../contexts/FormDataContext'
-import { shuffleTeamsByRating } from '../../functions/shuffleTeams'
+import { useFormData } from '../../contexts/FormDataContext';
+import { shuffleTeamsByRating } from '../../functions/shuffleTeams';
 
 export default function RatingCard() {
-  const t = useTranslations('home')
+  const t = useTranslations('home');
   const isMobile = useBreakpointValue({
     base: true,
     sm: false
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const {
     controls,
     handleChangeMembersToRating,
     membersToRating,
     handleChangeResult
-  } = useFormData()
+  } = useFormData();
 
   /**
    * Função que altera a pontuação do jogador
@@ -32,9 +32,9 @@ export default function RatingCard() {
    * @param index índice
    */
   function handleChangeIntegrantRating(rating: number | null, index: number) {
-    const clone = cloneDeep(membersToRating)
-    clone[index].rating = rating
-    handleChangeMembersToRating(clone)
+    const clone = cloneDeep(membersToRating);
+    clone[index].rating = rating;
+    handleChangeMembersToRating(clone);
   }
 
   /**
@@ -42,14 +42,14 @@ export default function RatingCard() {
    * @returns `void`
    */
   async function handleShuffleByRating() {
-    setLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const teams = toNumber(controls.numberOfTeams)
-    const separatedTeams = shuffleTeamsByRating(membersToRating, teams)
-    handleChangeResult(separatedTeams)
+    const teams = toNumber(controls.numberOfTeams);
+    const separatedTeams = shuffleTeamsByRating(membersToRating, teams);
+    handleChangeResult(separatedTeams);
 
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
@@ -64,11 +64,11 @@ export default function RatingCard() {
                 half={false}
                 value={toNumber(memberToRating.rating)}
                 onChange={(newRating: number) => {
-                  handleChangeIntegrantRating(newRating, indexMemberToRating)
+                  handleChangeIntegrantRating(newRating, indexMemberToRating);
                 }}
                 size={isMobile ? 24 : 16}
               />
-              <Text as="legend" ml={["2", "4"]}>{memberToRating.name}</Text>
+              <Text as="legend" ml={['2', '4']}>{memberToRating.name}</Text>
             </Flex>
           ))
         }
@@ -86,5 +86,5 @@ export default function RatingCard() {
         </Button>
       </Box>
     </Box>
-  )
+  );
 }

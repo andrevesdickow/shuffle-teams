@@ -1,15 +1,15 @@
-import { AppProps } from 'next/app'
-import { NextIntlProvider } from 'next-intl'
+import { NextIntlProvider } from 'next-intl';
+import { AppProps } from 'next/app';
 
 import {
   ChakraProvider,
   createLocalStorageManager
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 
-import { FormDataProvider } from '../contexts/FormDataContext'
-import { theme } from '../styles/theme'
+import { FormDataProvider } from '../contexts/FormDataContext';
+import { theme } from '../styles/theme';
 
-const manager = createLocalStorageManager('sortcheador_color_mode')
+const manager = createLocalStorageManager('sortcheador_color_mode');
 
 interface MyAppProps extends AppProps {
   cookies?: string;
@@ -26,5 +26,5 @@ export default function MyApp({ Component, pageProps }: MyAppProps) {
         </FormDataProvider>
       </ChakraProvider>
     </NextIntlProvider>
-  )
+  );
 }

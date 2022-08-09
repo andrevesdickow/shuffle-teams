@@ -1,4 +1,4 @@
-import { extendTheme } from '@chakra-ui/react'
+import { extendTheme } from '@chakra-ui/react';
 
 export const theme = extendTheme({
   config: {
@@ -23,8 +23,8 @@ export const theme = extendTheme({
 
       '::selection': {
         color: '#ffffff',
-        backgroundColor: '#319795',
+        backgroundColor: '#319795'
       }
     }
   }
-})
+});

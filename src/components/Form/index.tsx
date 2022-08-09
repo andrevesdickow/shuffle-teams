@@ -1,14 +1,15 @@
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import {
   MdClose as CloseIcon,
   MdContentCopy as CopyIcon,
   MdShuffle as ShuffleIcon,
   MdStar as StarIcon
-} from 'react-icons/md'
+} from 'react-icons/md';
 
-import { isEmpty, isNumber, toNumber } from 'lodash'
-import { useTranslations } from 'use-intl'
+import { isEmpty, isNumber, toNumber } from 'lodash';
+import { useTranslations } from 'use-intl';
+import * as yup from 'yup';
 
 import {
   Box,
@@ -27,12 +28,11 @@ import {
   Textarea,
   useToast,
   useBreakpointValue
-} from '@chakra-ui/react'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
+} from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import { useFormData } from '../../contexts/FormDataContext'
-import { organizeMembersToRating, shuffleTeams } from '../../functions/shuffleTeams'
+import { useFormData } from '../../contexts/FormDataContext';
+import { organizeMembersToRating, shuffleTeams } from '../../functions/shuffleTeams';
 
 interface IFormData {
   withRating: boolean;
@@ -45,12 +45,12 @@ type FormProps = {
 }
 
 export default function Form({ textToCopy }: FormProps) {
-  const t = useTranslations('home')
-  const toast = useToast()
+  const t = useTranslations('home');
+  const toast = useToast();
   const isMobile = useBreakpointValue({
     base: true,
     sm: false
-  })
+  });
 
   const {
     handleChangeControls,
@@ -58,7 +58,7 @@ export default function Form({ textToCopy }: FormProps) {
     handleChangeMembersToRating,
     resetFormData,
     hasResult
-  } = useFormData()
+  } = useFormData();
 
   const { register, handleSubmit, formState, watch } = useForm<IFormData>({
     resolver: yupResolver(yup.object().shape({
@@ -71,17 +71,17 @@ export default function Form({ textToCopy }: FormProps) {
       members: '',
       numberOfTeams: 2
     }
-  })
+  });
 
-  const { isSubmitting, errors } = formState
+  const { isSubmitting, errors } = formState;
 
   /**
    * Função executada ao clicar em embaralhar
-   * @param data 
+   * @param data
    * @returns `void`
    */
   const handleShuffle: SubmitHandler<IFormData> = async data => {
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (isEmpty(data.members)) {
       toast({
@@ -89,11 +89,11 @@ export default function Form({ textToCopy }: FormProps) {
         status: 'error',
         duration: 4000,
         isClosable: true,
-      })
-      return
+      });
+      return;
     }
 
-    const teams = toNumber(data.numberOfTeams)
+    const teams = toNumber(data.numberOfTeams);
 
     if (!isNumber(teams) || teams <= 0) {
       toast({
@@ -101,15 +101,15 @@ export default function Form({ textToCopy }: FormProps) {
         status: 'error',
         duration: 4000,
         isClosable: true,
-      })
-      return
+      });
+      return;
     }
 
-    handleChangeControls(data)
+    handleChangeControls(data);
 
-    const separatedTeams = shuffleTeams(data.members, teams)
-    handleChangeResult(separatedTeams)
-  }
+    const separatedTeams = shuffleTeams(data.members, teams);
+    handleChangeResult(separatedTeams);
+  };
 
   /**
    * Função executada ao clicar em "Adicionar pontuação"
@@ -122,11 +122,11 @@ export default function Form({ textToCopy }: FormProps) {
         status: 'error',
         duration: 4000,
         isClosable: true,
-      })
-      return
+      });
+      return;
     }
 
-    const teams = toNumber(data.numberOfTeams)
+    const teams = toNumber(data.numberOfTeams);
 
     if (!isNumber(teams) || teams <= 0) {
       toast({
@@ -134,21 +134,21 @@ export default function Form({ textToCopy }: FormProps) {
         status: 'error',
         duration: 4000,
         isClosable: true,
-      })
-      return
+      });
+      return;
     }
 
-    handleChangeControls(data)
+    handleChangeControls(data);
 
-    const separatedMembers = organizeMembersToRating(data.members)
-    handleChangeMembersToRating(separatedMembers)
-  }
+    const separatedMembers = organizeMembersToRating(data.members);
+    handleChangeMembersToRating(separatedMembers);
+  };
 
   /**
    * Função que limpa os resultados e formulário
    */
   function clearResults() {
-    resetFormData()
+    resetFormData();
   }
 
   return (
@@ -262,7 +262,6 @@ export default function Form({ textToCopy }: FormProps) {
                   colorScheme="teal"
                   leftIcon={<Icon as={CopyIcon} />}
                   variant="outline"
-                  onClick={() => { }}
                   width={isMobile ? 'full' : 'intrinsic'}
                   mr="4"
                   mb="4"
@@ -275,5 +274,5 @@ export default function Form({ textToCopy }: FormProps) {
         </Box>
       </VStack>
     </Box>
-  )
+  );
 }

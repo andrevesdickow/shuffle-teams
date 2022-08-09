@@ -9,12 +9,12 @@ import {
   size,
   split,
   toString,
-} from 'lodash'
-import compactFP from 'lodash/fp/compact'
-import flow from 'lodash/fp/flow'
-import mapFP from 'lodash/fp/map'
-import replaceFP from 'lodash/fp/replace'
-import trimFP from 'lodash/fp/trim'
+} from 'lodash';
+import compactFP from 'lodash/fp/compact';
+import flow from 'lodash/fp/flow';
+import mapFP from 'lodash/fp/map';
+import replaceFP from 'lodash/fp/replace';
+import trimFP from 'lodash/fp/trim';
 
 type SeparatedTeamsType = {
   [name: string]: IntegrantType[];
@@ -32,109 +32,109 @@ type IntegrantType = {
  * @returns `Object` objeto com as equipes sorteadas
  */
 export function shuffleTeams(members: string, numOfTeams: number): SeparatedTeamsType {
-  let listMembers = []
+  let listMembers = [];
 
-  const regex = new RegExp(/,/)
-  const written = regex.test(members)
+  const regex = new RegExp(/,/);
+  const written = regex.test(members);
 
   // se `true`, é porque foi escrito
   // senão é colado de alguma conversa
   if (written) {
-    listMembers = split(members, ',')
+    listMembers = split(members, ',');
   } else {
-    listMembers = split(members, /\r?\n/)
+    listMembers = split(members, /\r?\n/);
   }
 
-  const shuffledMembers = shuffle(listMembers)
+  const shuffledMembers = shuffle(listMembers);
 
-  let count = 1
-  const separatedTeams: SeparatedTeamsType = {}
+  let count = 1;
+  const separatedTeams: SeparatedTeamsType = {};
 
   for (let index = 0; index < size(shuffledMembers); index++) {
     if (count > numOfTeams) {
-      count = 1
+      count = 1;
     }
 
-    const regexStartWith = new RegExp(/^\d([\w ]+)?(.|-)/g)
-    if (!written && !regexStartWith.test(shuffledMembers[index])) continue
+    const regexStartWith = new RegExp(/^\d([\w ]+)?(.|-)/g);
+    if (!written && !regexStartWith.test(shuffledMembers[index])) continue;
 
     // const integrant = replace(shuffledMembers[index], /[^a-zA-Z]+/, '')
     const integrant = flow(
       replaceFP(regexStartWith, ''),
       trimFP
-    )(shuffledMembers[index])
+    )(shuffledMembers[index]);
 
-    if (isEmpty(integrant)) continue
+    if (isEmpty(integrant)) continue;
 
     set(separatedTeams, `team${count}`, [
       ...get(separatedTeams, `team${count}`, []),
       { name: integrant, rating: null }
-    ])
-    count++
+    ]);
+    count++;
   }
 
-  return separatedTeams
+  return separatedTeams;
 }
 
 export function shuffleTeamsByRating(members: IntegrantType[], numOfTeams: number): SeparatedTeamsType {
-  const ordered = orderBy(members, ['rating'], ['desc'])
-  const grouped = groupBy(ordered, 'rating')
+  const ordered = orderBy(members, ['rating'], ['desc']);
+  const grouped = groupBy(ordered, 'rating');
 
-  let count = 1
-  const separatedTeams: SeparatedTeamsType = {}
+  let count = 1;
+  const separatedTeams: SeparatedTeamsType = {};
 
   mapValues(grouped, (listMembers) => {
-    const shuffledMembers = shuffle(listMembers)
+    const shuffledMembers = shuffle(listMembers);
 
     for (let index = 0; index < size(shuffledMembers); index++) {
       if (count > numOfTeams) {
-        count = 1
+        count = 1;
       }
 
-      const integrant = shuffledMembers[index]
+      const integrant = shuffledMembers[index];
 
       set(separatedTeams, `team${count}`, [
         ...get(separatedTeams, `team${count}`, []),
         { name: integrant.name, rating: integrant.rating }
-      ])
-      count++
+      ]);
+      count++;
     }
 
-    return null
-  })
+    return null;
+  });
 
-  return separatedTeams
+  return separatedTeams;
 }
 
 export function organizeMembersToRating(members: string): IntegrantType[] {
-  let listMembers = []
+  let listMembers = [];
 
-  const regex = new RegExp(/,/)
-  const written = regex.test(members)
+  const regex = new RegExp(/,/);
+  const written = regex.test(members);
 
   // se `true`, é porque foi escrito
   // senão é colado de alguma conversa
   if (written) {
-    listMembers = split(members, ',')
+    listMembers = split(members, ',');
   } else {
-    listMembers = split(members, /\r?\n/)
+    listMembers = split(members, /\r?\n/);
   }
 
-  const regexStartWith = new RegExp(/^\d([\w ]+)?(.|-)/g)
+  const regexStartWith = new RegExp(/^\d([\w ]+)?(.|-)/g);
 
   const separatedMembers = flow(
     mapFP(integrant => {
       const name = flow(
         replaceFP(regexStartWith, ''),
         trimFP
-      )(toString(integrant))
+      )(toString(integrant));
 
-      if (isEmpty(name)) return null
+      if (isEmpty(name)) return null;
 
-      return { name, rating: null }
+      return { name, rating: null };
     }),
     compactFP
-  )(listMembers)
+  )(listMembers);
 
-  return separatedMembers
+  return separatedMembers;
 }

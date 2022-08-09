@@ -1,8 +1,10 @@
-import * as React from 'react'
+import * as React from 'react';
 
-import Document, { Html, Head, Main, NextScript } from 'next/document'
-import { ColorModeScript } from '@chakra-ui/react'
-import { theme } from '../styles/theme'
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+
+import { ColorModeScript } from '@chakra-ui/react';
+
+import { theme } from '../styles/theme';
 
 export default class MyDocument extends Document {
   render() {
@@ -22,7 +24,7 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
@@ -51,9 +53,9 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const initialProps = await Document.getInitialProps(ctx)
+  const initialProps = await Document.getInitialProps(ctx);
 
   return {
     ...initialProps
-  }
-}
+  };
+};
