@@ -1,16 +1,8 @@
 import { extendTheme } from '@chakra-ui/react'
-import { isEmpty } from 'lodash'
-import { parseCookies } from 'nookies'
-
-const cookies = parseCookies()
-const initialColorMode = !isEmpty(cookies['chakra-ui-color-mode'])
-  ? cookies['chakra-ui-color-mode']
-  : 'light'
 
 export const theme = extendTheme({
   config: {
-    initialColorMode,
-    // useSystemColorMode: true
+    useSystemColorMode: true
   },
   fonts: {
     heading: 'Roboto',

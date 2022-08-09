@@ -7,8 +7,8 @@ const nextConfig = {
     defaultLocale: 'pt'
   },
   images: {
-    domains: ['flagcdn.com'],
-  },
+    domains: ['flagcdn.com']
+  }
 }
 
 module.exports = nextConfig

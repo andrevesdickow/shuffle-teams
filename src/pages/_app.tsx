@@ -1,7 +1,5 @@
-import { NextPageContext } from 'next'
 import { AppProps } from 'next/app'
 import { NextIntlProvider } from 'next-intl'
-import { get } from 'lodash'
 
 import {
   ChakraProvider,
@@ -16,7 +14,7 @@ const manager = createLocalStorageManager('sortcheador_color_mode')
 interface MyAppProps extends AppProps {
   cookies?: string;
 }
-export default function MyApp({ Component, pageProps, cookies }: MyAppProps) {
+export default function MyApp({ Component, pageProps }: MyAppProps) {
   return (
     <NextIntlProvider messages={pageProps.messages}>
       <ChakraProvider
@@ -29,14 +27,4 @@ export default function MyApp({ Component, pageProps, cookies }: MyAppProps) {
       </ChakraProvider>
     </NextIntlProvider>
   )
-}
-
-interface GetInitialProps extends NextPageContext { }
-
-MyApp.getInitialProps = ({ req }: GetInitialProps) => {
-  return {
-    // first time users will not have any cookies and you may not return
-    // undefined here, hence ?? is necessary
-    cookies: get(req, 'headers.cookie', '')
-  }
 }

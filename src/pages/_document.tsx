@@ -3,7 +3,6 @@ import * as React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ColorModeScript } from '@chakra-ui/react'
 import { theme } from '../styles/theme'
-// import Script from 'next/script'
 
 export default class MyDocument extends Document {
   render() {
@@ -17,20 +16,6 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
           <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          {/* Global site tag (gtag.js) - Google Analytics */}
-          {/* <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_ANALYTICS_ID}`}
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){window.dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', '${process.env.NEXT_PUBLIC_ANALYTICS_ID}');
-            `}
-          </Script> */}
         </Head>
         <body>
           <Main />
